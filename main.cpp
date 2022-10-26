@@ -1,7 +1,7 @@
 #include <iostream>
 #include <regex>
 #include <fstream>
-
+#include <ctime>
 
 using namespace std;
 
@@ -14,6 +14,20 @@ typedef struct info{
     float deposit;
 }INFO;
 
+// For Recipts
+typedef struct recipt{
+    string transactionID, Date;
+    float cashIn, cashOut;
+
+    void setTime();
+}RECIPT;
+
+typedef struct list{
+    RECIPT rec;
+    struct list *next;
+}LIST;
+
+
 class User {
     private:
     int pincode;
@@ -24,7 +38,19 @@ class User {
     void menu();
     void openAcc();
     void registerAcc();
+    void validate();
 };
+
+
+void RECIPT::setTime(){
+    time_t now = time(0);
+    Date = ctime(&now);
+}
+
+void User::validate(){
+    
+}
+
 
 void User::registerAcc(){
     cout << "Register" << endl;
@@ -33,6 +59,8 @@ void User::registerAcc(){
 void User::openAcc(){
     cout << "Open Account" << endl;
 }
+
+
 
 void User::menu(){
     string choice;
@@ -75,13 +103,12 @@ void User::menu(){
 
 
 int main(int argc, char *argv[]){
-    User *us = new User;
-    while (1)
-    {
-        cout << "\e[1;1H\e[2J" << endl;
-        us->menu();
-    }
-    
-    
+    // User *us = new User;
+    // while (1)
+    // {
+    //     cout << "\e[1;1H\e[2J" << endl;
+    //     us->menu();
+    // }
+ 
 
 }
