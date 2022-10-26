@@ -1,11 +1,54 @@
 #include <iostream>
+#include <random>
 #include <regex>
-#include <fstream>
+#include <fstream> 
 #include <ctime>
 
 using namespace std;
 
-// Data Structure
+/// global variables
+
+regex numberEx("[-+]?([0-9]*\.[0-9]+|[0-9]+)");
+regex nameEx("^[a-zA-Z\\s]*$");
+
+// Data structure for Recipts
+typedef struct recipt{
+    string Date;
+    float cashIn, cashOut;
+
+    void setTime();
+}RECIPT;
+
+typedef struct list{
+    RECIPT rec;
+    string transactionID;
+    struct list *next;
+
+    string get_uuid();
+}LIST;
+
+
+//Generate a unique transactio ID
+string list::get_uuid() {
+    static random_device dev;
+    static mt19937 rng(dev());
+
+    uniform_int_distribution<int> dist(0, 15);
+
+    const char *v = "0123456789abcdef";
+    const bool dash[] = { 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0 };
+
+    string res;
+    for (int i = 0; i < 16; i++) {
+        if (dash[i]) res += "-";
+        res += v[dist(rng)];
+        res += v[dist(rng)];
+    }
+    return res;
+}
+
+
+// Data structure for Users
 
 typedef struct info{
     string name;
@@ -14,22 +57,16 @@ typedef struct info{
     float deposit;
 }INFO;
 
-// For Recipts
-typedef struct recipt{
-    string transactionID, Date;
-    float cashIn, cashOut;
+typedef struct userRecords{
+    LIST *recipt;
+    INFO inf;
+    struct userRecords *next;
 
-    void setTime();
-}RECIPT;
-
-typedef struct list{
-    RECIPT rec;
-    struct list *next;
-}LIST;
-
+}UREC;
 
 class User {
     private:
+
     int pincode;
 
     public:
@@ -38,7 +75,7 @@ class User {
     void menu();
     void openAcc();
     void registerAcc();
-    void validate();
+    bool validate(int mode, string value);
 };
 
 
@@ -47,13 +84,33 @@ void RECIPT::setTime(){
     Date = ctime(&now);
 }
 
-void User::validate(){
+
+bool User::validate(int mode, string value){
+    switch (mode)
+    {
+    case 1:
+            if(regex_match(value, nameEx))
+                return false;
+        break;
     
+    default:
+        break;
+    }
+    return true;
 }
 
 
+
 void User::registerAcc(){
-    cout << "Register" << endl;
+    string name;
+
+    cout << "Please enter your name" << endl;
+    getline(cin, name);
+
+    if(validate(1, name)){cout << "the name you entered is not a valid one." << endl; return;}
+
+
+
 }
 
 void User::openAcc(){
@@ -64,7 +121,7 @@ void User::openAcc(){
 
 void User::menu(){
     string choice;
-    regex ex("[-+]?([0-9]*\.[0-9]+|[0-9]+)");
+
 
     cout << "Welcome to atm" << endl;
     cout << "[1]. Registration" << endl;
@@ -75,7 +132,7 @@ void User::menu(){
     getline(cin, choice);
 
     
-    if(!(regex_match(choice, ex))){
+    if(!(regex_match(choice, numberEx))){
         cout << "Please enter a number!" << endl;
         return;
     }
@@ -86,6 +143,7 @@ void User::menu(){
     {
     case 1:
         registerAcc();
+        system("pause");
         break;
     case 2:
         openAcc();
@@ -103,12 +161,12 @@ void User::menu(){
 
 
 int main(int argc, char *argv[]){
-    // User *us = new User;
-    // while (1)
-    // {
-    //     cout << "\e[1;1H\e[2J" << endl;
-    //     us->menu();
-    // }
+    User *us = new User;
+    while (1)
+    {
+        cout << "\e[1;1H\e[2J" << endl;
+        us->menu();
+    }
  
 
 }
