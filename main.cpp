@@ -63,10 +63,10 @@ string get_uuid() {
 // Data structure for Users
 
 typedef struct info{
-    string name;
-    int contact;
-    int accoutNumber;
+    string name, birthDay, contact;
+    int accountNumber, pincode;
     float deposit;
+
 }INFO;
 
 
@@ -80,25 +80,48 @@ typedef struct userRecords{
 
 class User {
     private:
+    UREC *head;
 
-    
     public:
-    int getPincode();
-    int setPincode();
+    void setHead();
     void menu();
     void openAcc();
     void registerAcc();
-    void add();
+    void add(INFO inf);
     bool validate(int mode, string value);
 };
 
+void User::setHead(){
+    head = NULL;
+}
+void User::add(INFO inf){
+    UREC *pointer, *follower, *temp;
+    pointer = follower = head;
+
+    temp = new UREC;
+    temp->inf = inf; 
+
+    while (pointer != NULL)
+    {
+        follower = pointer;
+        pointer = pointer->next;
+    }
+
+    if(head == pointer){
+        head = temp;
+    }else{
+        follower->next = temp;
+        temp->next = pointer;
+    }
+
+}
 
 void RECIPT::setTime(){
     time_t now = time(0);
     Date = ctime(&now);
 }
 
-
+// TODO optimze Validation
 bool User::validate(int mode, string value){
     struct tm tm;
     
@@ -142,18 +165,25 @@ bool User::validate(int mode, string value){
 
 
 void User::registerAcc(){
-    string name, num, buffer,bd, pincode,deposit,choice, uuid;
+    INFO usr;
+
+
+    string buffer,bd, pincode,deposit,choice, uuid;
     time_t t = time(0);
     tm* now = localtime(&t);
 
 
     cout << "Please enter your name: ";
-    getline(cin, name);
-    if(validate(1, name)){cout << "HI";return;}
+    getline(cin, usr.name);
+    if(validate(1, usr.name)){cout << "HI";return;}
+    
 
     cout << "Please enter in yout phone number: +63";
-    getline(cin, num);
-    if(validate(2, num)){return;}
+    getline(cin, buffer);
+    if(validate(2, buffer)){return;}
+    usr.contact.append("+63");
+    usr.contact.append(buffer);
+
 
     cout << "please enter in your birthday\nMonth [1-12]:  ";    
     getline(cin, buffer);
@@ -171,31 +201,35 @@ void User::registerAcc(){
     bd.append(buffer);
     if(validate(3, bd)){return;}
     if((now->tm_year + 1900) - stoi(buffer) < 12){cout << "Anyone who's 13 below cannot use the atm!"<< endl; return;}
+    usr.birthDay = bd;
     
     cout << "Please enter in your pincode: ";
     getline(cin, pincode);
     if(validate(4, pincode)){return;}
-    if(pincode.length() == 6 || pincode.length() == 4){cout << "Pincode must only be a 4 or 6 digit number!" << endl; return;}
+    if(!(pincode.length() == 6 || pincode.length() == 4)){cout << "Pincode must only be a 4 or 6 digit number!" << endl; return;}
     cout << "Please re-enter your pincode: ";
     getline(cin, buffer);
     if(buffer != pincode){cout << "The pincode that you've entered does not match" << endl; return;}
+    usr.pincode = stoi(pincode);
 
     cout << "Please enter initial deposit: ";
-    getline(cin, deposit);
-    if(validate(4, deposit)){return;}
-    if(stoi(deposit) < 5000){cout << "initial deposit must be a minimum of 5000!" << endl; return;}
+    getline(cin, buffer);
+    if(validate(4, buffer)){return;}
+    if(stoi(buffer) < 5000){cout << "initial deposit must be a minimum of 5000!" << endl; return;}
+    usr.deposit = stoi(buffer);
 
+    // confirmation notice
     cout << "\e[1;1H\e[2J" << endl;
     cout << "\nPlease confirm your information!" << endl;
-    cout << "Name: " << name << endl;
-    cout << "Number: +63" << num << endl;
-    cout << "birthday: " << bd << endl;
-    cout << "initial Deposit: " << bd << endl;
+    cout << "Name: " << usr.name << endl;
+    cout << "Number: " << usr.contact << endl;
+    cout << "birthday: " << usr.birthDay << endl;
+    cout << "initial Deposit: " << usr.deposit << endl;
     cout << "\n\nType [Y] if all of the information are correct.\nType [N] if you want to re-enter our information: ";
     getline(cin, choice);
-    if(choice == "Y" || choice == "y"){uuid = get_uuid(); cout << "Your uniqe id is: " << uuid << endl; menu();}
+    if(choice == "Y" || choice == "y"){buffer = get_uuid(); cout << "Your uniqe id is: " << buffer << endl; usr.accountNumber = stoi(buffer);system("pause"); menu();}
 
-
+    add(usr);
 
 }
 
@@ -209,6 +243,7 @@ void User::menu(){
     string choice;
 
 
+    cout << "\e[1;1H\e[2J" << endl;
     cout << "Welcome to atm" << endl;
     cout << "[1]. Registration" << endl;
     cout << "[2]. Sign in" << endl;
@@ -251,7 +286,6 @@ int main(){
     User *us = new User;
     while (1)
     {
-        cout << "\e[1;1H\e[2J" << endl;
         us->menu();
     }
 
