@@ -46,15 +46,14 @@ typedef struct list{
 
 //Generate a unique transactio ID
 string get_uuid() {
-    static random_device dev;
-    static mt19937 rng(dev());
+
+    static mt19937 rng(time(0));
 
     uniform_int_distribution<int> dist(0, 9);
 
     const char *v = "0123456789";
     string res;
-    for (int i = 0; i < 4; i++) {
-        res += v[dist(rng)];
+    for (int i = 0; i < 5; i++) {
         res += v[dist(rng)];
     }
     return res;
@@ -70,6 +69,8 @@ typedef struct info{
     float deposit;
 }INFO;
 
+
+
 typedef struct userRecords{
     LIST *recipt;
     INFO inf;
@@ -80,14 +81,14 @@ typedef struct userRecords{
 class User {
     private:
 
-    int pincode;
-
+    
     public:
     int getPincode();
     int setPincode();
     void menu();
     void openAcc();
     void registerAcc();
+    void add();
     bool validate(int mode, string value);
 };
 
@@ -141,7 +142,7 @@ bool User::validate(int mode, string value){
 
 
 void User::registerAcc(){
-    string name, num, buffer,bd, pincode,deposit,choice;
+    string name, num, buffer,bd, pincode,deposit,choice, uuid;
     time_t t = time(0);
     tm* now = localtime(&t);
 
@@ -174,7 +175,7 @@ void User::registerAcc(){
     cout << "Please enter in your pincode: ";
     getline(cin, pincode);
     if(validate(4, pincode)){return;}
-    if(pincode.length() > 6){cout << "Pincode must only be at a maximum of 6 digits" << endl; return;}
+    if(pincode.length() == 6 || pincode.length() == 4){cout << "Pincode must only be a 4 or 6 digit number!" << endl; return;}
     cout << "Please re-enter your pincode: ";
     getline(cin, buffer);
     if(buffer != pincode){cout << "The pincode that you've entered does not match" << endl; return;}
@@ -184,8 +185,6 @@ void User::registerAcc(){
     if(validate(4, deposit)){return;}
     if(stoi(deposit) < 5000){cout << "initial deposit must be a minimum of 5000!" << endl; return;}
 
-    string uuid = get_uuid();
-
     cout << "\e[1;1H\e[2J" << endl;
     cout << "\nPlease confirm your information!" << endl;
     cout << "Name: " << name << endl;
@@ -194,7 +193,8 @@ void User::registerAcc(){
     cout << "initial Deposit: " << bd << endl;
     cout << "\n\nType [Y] if all of the information are correct.\nType [N] if you want to re-enter our information: ";
     getline(cin, choice);
-    if(choice == "Y" || choice == "y"){cout << "Your uniqe id is: " << uuid << endl; menu();}
+    if(choice == "Y" || choice == "y"){uuid = get_uuid(); cout << "Your uniqe id is: " << uuid << endl; menu();}
+
 
 
 }
@@ -247,10 +247,12 @@ void User::menu(){
 
 
 int main(){
+
     User *us = new User;
     while (1)
     {
         cout << "\e[1;1H\e[2J" << endl;
         us->menu();
     }
+
 }
