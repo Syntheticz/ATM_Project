@@ -29,7 +29,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <unistd.h>
+//#include <unistd.h>
+#include <process.h>
+#include <io.h>
 #include <string.h>
 #include <conio.h>
 #include <time.h>
@@ -183,7 +185,7 @@ node *checkAccountNumber(node* root){
     long int userAccNo;
 
     accNo = fopen(fpRAN, "r");                          // opening file path of "Registered Account Numbers.txt"
-    userAcc = fopen("E:\\UserAccount.txt", "r");        // opening file path of "UserAccount.txt"
+    userAcc = fopen("G:\\UserAccount.txt", "r");        // opening file path of "UserAccount.txt"
 
     if(accNo == NULL){                          // If accNo file is empty
         Sleep(200);
@@ -266,7 +268,7 @@ int scanFlashDrive(){
     FILE *check;
     int i = 38, j = 1;      // i and j are iterators; i is for moving flash drive graphic and j is for incrementing variable.
 
-    if(access("E:\\UserAccount.txt", F_OK) == -1){          // accessing flash Drive E
+    if(access("G:\\UserAccount.txt", F_OK) == -1){          // accessing flash Drive E
         system("cls");
         maxBorder(0,0);
         do{
@@ -320,7 +322,7 @@ int scanFlashDrive(){
     }
     else{
         system("cls");
-        check = fopen("E:\\UserAccount.txt", "r");  // If FLASH DRIVE is empty, it will exit.
+        check = fopen("G:\\UserAccount.txt", "r");  // If FLASH DRIVE is empty, it will exit.
         if(check == NULL){
             colorCode(11,0); gotoxy(19,14); printf("PHSBC_BOT:");
             colorCode(14,0); printf("~$");
@@ -349,7 +351,7 @@ void loadDataFromFile(){
     int result;                     // variable for successful conversions
     FILE *read;
 
-    read = fopen("E:\\UserAccount.txt","r");
+    read = fopen("G:\\UserAccount.txt","r");
 
     if(read != NULL){
         while(!feof(read)){ // end of file
@@ -1067,9 +1069,9 @@ void deposit(transac **head){
     }
     else{
         // Opening text files.
-        read = fopen("\\UserAccount.txt", "r");
-        tempTxt = fopen("E:\\Temp.txt","w");
-        transac = fopen("E:\\Transaction History.txt", "a+");
+        read = fopen("G:\\UserAccount.txt", "r");
+        tempTxt = fopen("G:\\Temp.txt","w");
+        transac = fopen("G:\\Transaction History.txt", "a+");
 
         system("cls");
         maxBorder(0,0);
@@ -1088,8 +1090,8 @@ void deposit(transac **head){
         fclose(transac);
         fclose(tempTxt);
 
-        remove("E:\\UserAccount.txt");  // remove the old UserAccount details
-        rename("E:\\Temp.txt","E:\\UserAccount.txt"); // the new content details in program is retained in flash drive.
+        remove("G:\\UserAccount.txt");  // remove the old UserAccount details
+        rename("G:\\Temp.txt","G:\\UserAccount.txt"); // the new content details in program is retained in flash drive.
 
         gotoxy(45,26);
         system("pause");
@@ -1364,8 +1366,8 @@ void saveTransaction(int withdraw, transac **head){
     double oldBalance, newBalance;
 
     // opening the file
-    write = fopen("E:\\UserAccount.txt","w");
-    transac = fopen("E:\\Transaction History.txt", "a+");
+    write = fopen("G:\\UserAccount.txt","w");
+    transac = fopen("G:\\Transaction History.txt", "a+");
 
     oldBalance = withdraw + user.amount;
     newBalance = user.amount;
@@ -1409,9 +1411,9 @@ void printReceipt(int withdraw, transac **head){
     strcpy(fp, fullFileName);
     strcat(fp, "\\Withdraw Receipt.txt");   // getting the file path of Withdraw Receipt.txt
 
-    write = fopen("E:\\UserAccount.txt","w");
+    write = fopen("G:\\UserAccount.txt","w");
     write1 = fopen(fp,"w"); //creating the file in ATM Database folder
-    transac = fopen("E:\\Transaction History.txt", "a+");
+    transac = fopen("G:\\Transaction History.txt", "a+");
 
     fprintf(write1,"***************************************************\n");
     fprintf(write1,"          PHILIPPINE SOCIAL BANK COMMERCE          \n");
@@ -1576,8 +1578,8 @@ void changePass(){
     bool valid = false; // set valid to false
 
     // Opening text files
-    read = fopen("E:\\UserAccount.txt","r");
-    temp = fopen("E:\\Temp.txt","w");
+    read = fopen("G:\\UserAccount.txt","r");
+    temp = fopen("G:\\Temp.txt","w");
 
     do{
         system("cls");
@@ -1793,8 +1795,8 @@ void changePass(){
     fclose(read);
 
     // remove and rename the file
-    remove("E:\\UserAccount.txt");
-    rename("E:\\temp.txt", "E:\\UserAccount.txt");
+    remove("G:\\UserAccount.txt");
+    rename("G:\\temp.txt", "G:\\UserAccount.txt");
 }
 
 
