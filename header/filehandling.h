@@ -1,6 +1,6 @@
 
 #include "dataStructure.h"
-class fileHandling : public User{
+class fileHandling : protected User{
     private:
     string path;
     
@@ -63,8 +63,7 @@ void fileHandling::retrieveAcc(){
 void fileHandling::retrieve(){
     fstream fp;
     INFO rec;
-
-    fp.open(path, ios::in);
+    fp.open("records.txt", ios::in);
     if(!fp){
         cout<<" Error while creating the file "; 
     }else{
@@ -74,7 +73,7 @@ void fileHandling::retrieve(){
                 fp >> rec.accountNumber >> rec.pincode >> rec.birthDay >> rec.savings;
                 fp.ignore();
                 if(!fp.eof()){
-                    add(rec);
+                    add(rec, getHead());
                 }else{
                     break;
                 }

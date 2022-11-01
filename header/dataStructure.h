@@ -8,7 +8,7 @@
 #include <sstream>
 #include <fstream>
 
-#include "../hash/sha256.h"
+#include "../sha256.h"
 using namespace std;
 
 
@@ -46,10 +46,11 @@ class User {
 
     public:
     void setHead();
+    UREC* getHead();
     void menu();
     void openAcc();
     void registerAcc();
-    void add(INFO inf);
+    void add(INFO inf, UREC *heads);
     void retrieve();
     bool validate(int mode, string value);
     
@@ -65,3 +66,11 @@ class User {
     void accountMenu();
     // TODO Add features.    
 };
+
+void User::setHead(){
+    head = NULL;
+}
+
+UREC* User::getHead(){
+    return head;
+}

@@ -48,12 +48,17 @@ UREC* User::locate(int accountNumber){
 }
 
 
-void User::add(INFO inf){
+void User::add(INFO inf, UREC *heads){
     UREC *pointer, *follower, *temp;
-    pointer = follower = head;
+    pointer = follower = heads;
 
     temp = new UREC;
     temp->inf = inf; 
+
+    //For testing
+    if(getHead() == NULL){cout << "pointer is null!" << endl;}
+    cout << "test " << pointer->inf.accountNumber<< endl;
+    system("pause");
 
     while (pointer != NULL)
     {
@@ -68,11 +73,6 @@ void User::add(INFO inf){
         temp->next = pointer;
     }
 
-}
-
-
-void User::setHead(){
-    head = NULL;
 }
 
 
@@ -188,7 +188,7 @@ void User::registerAcc(){
     cout << "\n\nType [Y] if all of the information are correct.\nType [N] if you want to re-enter our information: ";
     getline(cin, choice);
     if(choice == "Y" || choice == "y"){buffer = get_uuid(); cout << "Your uniqe id is: " << buffer << endl; usr.accountNumber = stoi(buffer);system("pause"); 
-    add(usr); menu();}
+    add(usr, getHead()); menu();}
 
 
 }
