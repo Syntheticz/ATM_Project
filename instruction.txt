@@ -67,4 +67,5 @@ TODO:
   for deposit must be bills
   salted Encrypted pincode
   better UI
+  Operators key
         
