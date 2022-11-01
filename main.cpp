@@ -76,7 +76,6 @@ typedef struct userRecords{
     LIST *recipt;
     INFO inf;
     struct userRecords *next;
-
 }UREC;
 
 class User {
@@ -89,18 +88,23 @@ class User {
     void menu();
     void openAcc();
     void registerAcc();
-    void add(INFO inf, UREC *point);
+    void add(INFO inf);
+    void addtoAcc(INFO inf);
     void save();
+    void saveToAcc();
     void retrieve(string path, int mode);
+    void retrieveAcc(string path);
     bool validate(int mode, string value);
     
     //for Oppended Accounts
     bool checkPin();
     void checkBal();
     void withdraw();
-    void deposit(int amount);
-    void fundTransfer(int sent, int recieved);      
+    void deposit();
+    void fundTransfer();      
     void changePin();
+
+    UREC* locate(int accountNumber);
     void accountMenu();
     // TODO Add features.    
 };
@@ -110,9 +114,9 @@ void User::setHead(){
     acc = NULL;
 }
 
-void User::add(INFO inf, UREC *point){
+void User::add(INFO inf){
     UREC *pointer, *follower, *temp;
-    pointer = follower = point;
+    pointer = follower = head;
 
     temp = new UREC;
     temp->inf = inf; 
@@ -123,8 +127,30 @@ void User::add(INFO inf, UREC *point){
         pointer = pointer->next;
     }
 
-    if(point == pointer){
-        point = temp;
+    if(head == pointer){
+        head = temp;
+    }else{
+        follower->next = temp;
+        temp->next = pointer;
+    }
+
+}
+
+void User::addtoAcc(INFO inf){
+    UREC *pointer, *follower, *temp;
+    pointer = follower = acc;
+
+    temp = new UREC;
+    temp->inf = inf; 
+
+    while (pointer != NULL)
+    {
+        follower = pointer;
+        pointer = pointer->next;
+    }
+
+    if(acc == pointer){
+        acc = temp;
     }else{
         follower->next = temp;
         temp->next = pointer;
@@ -244,7 +270,7 @@ void User::registerAcc(){
     cout << "\n\nType [Y] if all of the information are correct.\nType [N] if you want to re-enter our information: ";
     getline(cin, choice);
     if(choice == "Y" || choice == "y"){buffer = get_uuid(); cout << "Your uniqe id is: " << buffer << endl; usr.accountNumber = stoi(buffer);system("pause"); 
-    add(usr, head); menu();}
+    add(usr); menu();}
 
 
 }
@@ -261,10 +287,25 @@ void User::openAcc(){
     fp.close();
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Card detected..." << endl;
-    retrieve("record.txt", 0);
+    retrieveAcc("record.txt");
     system("pause");
     
     accountMenu();
+}
+
+void User::saveToAcc(){
+    fstream fp;
+    UREC *pointer = acc;
+    fp.open("record.txt", ios::out);
+    if(!fp){
+        cout<<" Error while creating the file ";     
+    }else{  
+        while(pointer != NULL){
+            fp << pointer->inf.name << "\n" << pointer->inf.accountNumber << " " << pointer->inf.pincode << " " << pointer->inf.birthDay << " " << pointer->inf.savings << endl;
+            pointer = pointer->next;
+        }
+        fp.close();
+            }
 }
 
 void User::save(){
@@ -282,12 +323,9 @@ void User::save(){
             }
 }
 
-//TODO Fix the point being NULL
-
-void User::retrieve(string path, int mode){
+void User::retrieveAcc(string path){
     fstream fp;
     INFO rec;
-    UREC *temp = mode ? head : acc;
 
     fp.open(path, ios::in);
     if(!fp){
@@ -299,9 +337,34 @@ void User::retrieve(string path, int mode){
                 fp >> rec.accountNumber >> rec.pincode >> rec.birthDay >> rec.savings;
                 fp.ignore();
                 if(!fp.eof()){
-                    add(rec, temp);
-                    cout << temp->inf.pincode << endl;
-                    system("pause");
+                    addtoAcc(rec);
+                }else{
+                    break;
+                }
+               
+
+            }
+            fp.close();
+
+        }
+    }
+}
+
+void User::retrieve(string path, int mode){
+    fstream fp;
+    INFO rec;
+
+    fp.open(path, ios::in);
+    if(!fp){
+        cout<<" Error while creating the file "; 
+    }else{
+        if(fp.is_open()){
+            while(true){
+                getline(fp, rec.name, '\n');
+                fp >> rec.accountNumber >> rec.pincode >> rec.birthDay >> rec.savings;
+                fp.ignore();
+                if(!fp.eof()){
+                    add(rec);
                 }else{
                     break;
                 }
@@ -332,30 +395,152 @@ bool User::checkPin(){
 
 void User::withdraw(){
     string amount;
-    cout << "Remaining Balance: " << acc->inf.savings << endl;
-    cout << "Much do you want to withdraw [1-" << acc->inf.savings << "]: ";
+    cout << "Remaining Balance: " << head->inf.savings << endl;
+    cout << "Much do you want to withdraw [1-" << head->inf.savings << "]: ";
     getline(cin, amount);
+
     if(!(regex_match(amount, numberEx))){
         cout << "Please enter a number!" << endl;
         withdraw();
     }
-    if(stoi(amount) > acc->inf.savings){
+    if(stoi(amount) > head->inf.savings){
         cout << "Error: The amount you entered is more than your savings!" << endl;
         system("pause");
         withdraw();
     }
-    acc->inf.savings = acc->inf.savings - stoi(amount);
+    head->inf.savings = head->inf.savings - stof(amount);
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Withdrawn successfully..." << endl;
+    checkBal();
     system("pause");
 }
 
 void User::checkBal(){
-    cout << "Current balance: " << acc->inf.savings << endl;
+    cout <<acc->inf.name<< " your current balance is " << acc->inf.savings << endl;
+    system("pause");
 }
 
+void User::deposit(){
+    string amount;
+    cout << "\e[1;1H\e[2J" << endl;
+    cout << "Please enter in the amount that you want to deposit: ";
+    getline(cin, amount);
+    if(!(regex_match(amount, numberEx))){
+        cout << "Please enter a number!" << endl;
+        deposit();
+    }
+    if(stof(amount) == 0){
+        cout << "Please enter a valid amount!" << endl;
+        deposit();
+    }
+    head->inf.savings = head->inf.savings + stof(amount);
+    cout << "Deposit Successfull!" << endl;
+    checkBal();
+}
 
+UREC* User::locate(int accountNumber){
+    UREC *pointer = head;
+    while(pointer != NULL){
+        if(accountNumber == pointer->inf.accountNumber)
+         return pointer;
+        pointer = pointer->next;
+    }
+    return NULL;
+}
+
+void User::fundTransfer(){
+    string amount, accountNum, c;
+    cout << "\e[1;1H\e[2J" << endl;
+    cout << "Please enter in the account number that you want to transfer fund to: ";
+    getline(cin, accountNum);
+    if(!(regex_match(accountNum, numberEx))){
+        cout << "Please enter a number!" << endl;
+        fundTransfer();
+    }
+
+    UREC *point = locate(stoi(accountNum));
+    if(point == NULL){
+        cout << "\e[1;1H\e[2J" << endl;
+        cout << "User not found!" << endl;
+        system("pause");
+        fundTransfer();
+    }
+
+    //TODO have this in another function
+    cout << "\e[1;1H\e[2J" << endl;
+    cout << "You are transfering funds to an individual named: " << point->inf.name << endl;
+    cout << "With and account number of " << point->inf.accountNumber << endl;
+    cout << "Do you still want to continue? [Y] yes or [N] no: ";
+    getline(cin, c);
+    if(c == "y" || c == "Y"){
+        cout << "Please enter in the amount that you want to transfer [1-" << acc->inf.savings << "]: ";
+        getline(cin, amount);
+        if(!(regex_match(amount, numberEx))){
+            cout << "Please enter a number!" << endl;
+            system("pause");
+            fundTransfer();
+        }
+        if(stof(amount) > acc->inf.savings){
+            cout << "Entered amount must not be more than your savings!" << endl;
+            system("pause");
+            fundTransfer();
+        }
+
+        if(stof(amount) < 1){
+            cout << "Entered amount must be a valid amount!" << endl;
+            system("pause");
+            fundTransfer();
+        }
+
+        acc->inf.savings = acc->inf.savings - stof(amount);
+        point->inf.savings = point->inf.savings + stof(amount);
+        cout << "\e[1;1H\e[2J" << endl;
+        cout << "Fund transfered successfully!" << endl;
+        checkBal();
+        system("pause");
+        return;
+    }
+
+    return;
+
+
+}
+
+void User::changePin(){
+    string pin, buffer;
+    cout << "\e[1;1H\e[2J" << endl;
+    cout << "Change Pin..." << endl;
+    cout << "Please enter in your current pin: ";
+    getline(cin, pin);
+    if(!(regex_match(pin, numberEx))){
+        cout << "Please enter a number!" << endl;
+        changePin();
+    }
+    if(sha256(pin) != acc->inf.pincode){
+        cout << "PIN does not match" << endl;
+        system("pause");
+        changePin();
+    }else{
+        cout << "Please enter in your new pin: ";
+        getline(cin, pin);
+        if(!(pin.length() == 6 || pin.length() == 4)){cout << "Pincode must only be a 4 or 6 digit number!" << endl; changePin();}
+        cout << "Please re-enter in your new pin: ";
+        getline(cin, buffer);
+        if(buffer != pin){
+            cout << "PIN does not match" << endl;
+            system("pause");
+        }else{
+            acc->inf.pincode = sha256(pin);
+            cout << "PIN changed sucessfully!" << endl;
+            saveToAcc();
+            system("pause");
+        }
+    }
+}
+
+// TODO make user not to enter pin again when wrong on the below choices
 void User::accountMenu(){
+     if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Welcome to Student Banks Inc." << endl;
     cout << "[1] Balance Inquiry" << endl;
@@ -365,10 +550,10 @@ void User::accountMenu(){
     cout << "[5] Change PIN code" << endl;
     cout << "[6] More options..." << endl;
     cout << "[7] Exit" << endl;
-
+    cout << "Please enter in [1-7]: ";
     string c;
     getline(cin, c);
-     if(!(regex_match(c, numberEx))){
+    if(!(regex_match(c, numberEx))){
         cout << "Please enter a number!" << endl;
         return;
     }
@@ -377,19 +562,24 @@ void User::accountMenu(){
     switch (stoi(c))
     {
     case 1:
+        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
         checkBal();
         break;
     case 2:
+        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
         withdraw();
         break;
     case 3:
-        /* code */
+        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
+        deposit();
         break;
     case 4:
-        /* code */
+        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
+        fundTransfer();
         break;
     case 5:
-        /* code */
+        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
+        changePin();
         break;
     case 6:
         /* code */
@@ -398,6 +588,7 @@ void User::accountMenu(){
         exit(0);
         break;
     default:
+        cout << "Please enter in a valid choice!" << endl;
         break;
     }
 
@@ -456,6 +647,5 @@ int main(){
         us.menu();
     }
 
-    system("cd crypt && ccrypt -e ../record.txt -K 1234");
 
 }
