@@ -39,3 +39,32 @@ PIN CODE: MAX of 6 digits/ 4 digits need to press ENTER key
 
 FLASH DRIVE AS ATM CARD:
 Check the pin.code file in card if not present the program will ask to “Please insert card.”
+
+TODO:
+  URGENT: 
+  Dapat pag nag eenter ng pin *.
+  Optimized code 
+    header files
+     -functions : 
+        main functionalities
+        calculations
+        expressions defines, constants
+        security
+     -fileHandling
+        function regarding files
+        encrption of files
+     -display :low prio
+        functions regarding diplay such as menu's 
+        gotox();
+     -validation
+        inputs validation
+        data validation
+
+  automatically savings with encyprtion
+  better way to clear the screen*
+  encrption for sign in use pincode for key to decrypt file.
+  encyption every transaction
+  for deposit must be bills
+  salted Encrypted pincode
+  better UI
+        
