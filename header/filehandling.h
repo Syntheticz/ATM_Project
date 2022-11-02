@@ -1,17 +1,6 @@
-
 #include "dataStructure.h"
-class fileHandling : protected User{
-    private:
-    string path;
-    
-    public:
-    void save();
-    void retrieve();
-    void retrieveAcc();
-    void saveToAcc();
-};
 
-void fileHandling::save(){
+void User::save(){
     fstream fp;
     UREC *pointer = head;
     fp.open("records.txt", ios::out);
@@ -26,10 +15,39 @@ void fileHandling::save(){
             }
 }
 
-void fileHandling::saveToAcc(){
+
+void User::retrieve(){
+    fstream fp;
+    INFO rec;
+    fp.open("records.txt", ios::in);
+    if(!fp){
+        cout<<" Error while creating the file "; 
+    }else{
+        if(fp.is_open()){
+            while(true){
+                getline(fp, rec.name, '\n');
+                fp >> rec.accountNumber >> rec.pincode >> rec.birthDay >> rec.savings;
+                fp.ignore();
+                if(!fp.eof()){
+                    add(rec);
+                }else{
+                    break;
+                }
+               
+
+            }
+            fp.close();
+
+        }
+    }
+}
+
+void User::saveToAcc(){
     fstream fp;
     UREC pointer = acc;
-    fp.open(path, ios::out);
+
+    //change path to removable storage
+    fp.open("record.txt", ios::out);
     if(!fp){
         cout<<" Error while creating the file ";     
     }else{  
@@ -40,11 +58,11 @@ void fileHandling::saveToAcc(){
         fp.close();
 }
 
-
-void fileHandling::retrieveAcc(){
+void User::retrieveAcc(){
     fstream fp;
 
-    fp.open(path, ios::in);
+    //change path to removable storage
+    fp.open("record.txt", ios::in);
     if(!fp){
         cout<<" Error while creating the file "; 
     }else{
@@ -60,28 +78,4 @@ void fileHandling::retrieveAcc(){
     }
 }
 
-void fileHandling::retrieve(){
-    fstream fp;
-    INFO rec;
-    fp.open("records.txt", ios::in);
-    if(!fp){
-        cout<<" Error while creating the file "; 
-    }else{
-        if(fp.is_open()){
-            while(true){
-                getline(fp, rec.name, '\n');
-                fp >> rec.accountNumber >> rec.pincode >> rec.birthDay >> rec.savings;
-                fp.ignore();
-                if(!fp.eof()){
-                    add(rec, getHead());
-                }else{
-                    break;
-                }
-               
 
-            }
-            fp.close();
-
-        }
-    }
-}

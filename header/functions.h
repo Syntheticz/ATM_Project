@@ -3,13 +3,10 @@
 using namespace std;
 
 
-#include "filehandling.h"
-
-fileHandling fh;
+#include "validation.h"
 /// expression
 
-regex numberEx("[-+]?([0-9]*\\.[0-9]+|[0-9]+)");
-regex nameEx("^[a-zA-Z\\s]*$");
+
 
 //Generate a unique transactio ID
 string get_uuid() {
@@ -48,17 +45,12 @@ UREC* User::locate(int accountNumber){
 }
 
 
-void User::add(INFO inf, UREC *heads){
+void User::add(INFO inf){
     UREC *pointer, *follower, *temp;
-    pointer = follower = heads;
+    pointer = follower = head;
 
     temp = new UREC;
     temp->inf = inf; 
-
-    //For testing
-    if(getHead() == NULL){cout << "pointer is null!" << endl;}
-    cout << "test " << pointer->inf.accountNumber<< endl;
-    system("pause");
 
     while (pointer != NULL)
     {
@@ -188,7 +180,7 @@ void User::registerAcc(){
     cout << "\n\nType [Y] if all of the information are correct.\nType [N] if you want to re-enter our information: ";
     getline(cin, choice);
     if(choice == "Y" || choice == "y"){buffer = get_uuid(); cout << "Your uniqe id is: " << buffer << endl; usr.accountNumber = stoi(buffer);system("pause"); 
-    add(usr, getHead()); menu();}
+    add(usr); menu();}
 
 
 }
@@ -205,7 +197,7 @@ void User::openAcc(){
     fp.close();
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Card detected..." << endl;
-    fh.retrieveAcc();
+    retrieveAcc();
     system("pause");
     
     accountMenu();
@@ -357,7 +349,7 @@ void User::changePin(){
         }else{
             acc.inf.pincode = sha256(pin);
             cout << "PIN changed sucessfully!" << endl;
-            fh.saveToAcc();
+            saveToAcc();
             system("pause");
         }
     }
@@ -423,7 +415,6 @@ void User::accountMenu(){
 void User::menu(){
     string choice;
 
-
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Welcome to atm" << endl;
     cout << "[1]. Registration" << endl;
@@ -451,7 +442,7 @@ void User::menu(){
         openAcc();
         break;
     case 3:
-        fh.save();
+        save();
         exit(0);
         break;
     default:

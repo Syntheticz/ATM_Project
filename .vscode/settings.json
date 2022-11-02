@@ -5,6 +5,20 @@
         "ostream": "cpp",
         "string": "cpp",
         "xstring": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "atomic": "cpp",
+        "iosfwd": "cpp",
+        "istream": "cpp",
+        "random": "cpp",
+        "sstream": "cpp",
+        "type_traits": "cpp",
+        "vector": "cpp",
+        "xiosbase": "cpp",
+        "xlocale": "cpp",
+        "xlocinfo": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "xmemory": "cpp"
     }
 }

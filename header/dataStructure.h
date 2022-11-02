@@ -11,6 +11,8 @@
 #include "../sha256.h"
 using namespace std;
 
+regex numberEx("[-+]?([0-9]*\\.[0-9]+|[0-9]+)");
+regex nameEx("^[a-zA-Z\\s]*$");
 
 typedef struct recipt{
     string Date;
@@ -39,19 +41,19 @@ typedef struct userRecords{
     struct userRecords *next;
 }UREC;
 
-class User {
+class User{
     protected:
     UREC *head;
     UREC acc;
 
     public:
+
+
     void setHead();
-    UREC* getHead();
     void menu();
     void openAcc();
     void registerAcc();
-    void add(INFO inf, UREC *heads);
-    void retrieve();
+    void add(INFO inf);
     bool validate(int mode, string value);
     
     //for Oppended Accounts
@@ -62,6 +64,12 @@ class User {
     void fundTransfer();      
     void changePin();
 
+    //File Handling
+    void save();
+    void saveToAcc();
+    void retrieve();
+    void retrieveAcc();
+
     UREC* locate(int accountNumber);
     void accountMenu();
     // TODO Add features.    
@@ -69,8 +77,4 @@ class User {
 
 void User::setHead(){
     head = NULL;
-}
-
-UREC* User::getHead(){
-    return head;
 }
