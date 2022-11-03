@@ -46,7 +46,7 @@ TODO:
   Optimized code 
     header files
      -functions : 
-        main functionalities
+        main functionalities 
         calculations
         expressions defines, constants
         security

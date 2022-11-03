@@ -23,15 +23,7 @@ string get_uuid() {
     return res;
 }
 
-extern "C" char* strptime(const char* str, const char* format, struct tm* time) {
-  istringstream input(str);
-  input.imbue(locale(setlocale(LC_ALL, nullptr)));
-  input >> get_time(time, format);
-  if (input.fail()) {
-    return nullptr;
-  }
-  return (char*)(str + input.tellg());
-}
+
 
 
 UREC* User::locate(int accountNumber){
@@ -73,102 +65,59 @@ void RECIPT::setTime(){
     Date = ctime(&now);
 }
 
-// TODO optimze Validation
-bool User::validate(int mode, string value){
-    struct tm tm;
-    
-    switch (mode)
-    {
-    case 1:
-        if(!(regex_match(value, nameEx))){
-            cout << "the name you entered is not a valid one." << endl;
-            return true;
-        }
-    break;
-    case 2:
-        if(!(regex_match(value, numberEx))){
-            cout << "Please enter a number!" << endl;
-            return true;
-        }
-        if(value.length() != 10){
-            cout << " Please enter in a valid number! Ex. +639123456789" << endl;
-            return true;
-        }
-    break;
-    case 3:
-        if(!(strptime(value.c_str(), "%m/%d/%Y", &tm))){
-            cout << " Please enter in a valid date! month/day/year." << endl;
-            return true;
-        }
-    break;
-     case 4:
-        if(!(regex_match(value, numberEx))){
-            cout << "Please enter a number!" << endl;
-            return true;
-        }
-    break;
-    default:
-        return false;
-        break;
-    }
-    return false;
-}
-
 
 
 void User::registerAcc(){
     INFO usr;
 
-
-    string buffer,bd, pincode,deposit,choice, uuid;
     time_t t = time(0);
     tm* now = localtime(&t);
 
 
     cout << "Please enter your name: ";
-    getline(cin, usr.name);
-    if(validate(1, usr.name)){cout << "HI";return;}
+    getline(cin, input);
+    if(validate(2)){return;}
+    usr.name = input;
+
     
 
     cout << "Please enter in yout phone number: +63";
-    getline(cin, buffer);
-    if(validate(2, buffer)){return;}
+    getline(cin, input);
+    if(validate(3)){return;}
     usr.contact.append("+63");
-    usr.contact.append(buffer);
+    usr.contact.append(input);
 
-
-    cout << "please enter in your birthday\nMonth [1-12]:  ";    
-    getline(cin, buffer);
-    if(validate(4, buffer)){return;}
-    bd.append(buffer + "/");
+    buffer = "";
+    cout << "please enter in your birthday\nMonth [1-12] [MM]:  ";    
+    getline(cin, input);
+    if(validate(1)){return;}
+    buffer.append(input + "/");
     
-    cout << "Day [01-30]: ";
-    getline(cin, buffer);
-    if(validate(4, buffer)){return;}
-    bd.append(buffer + "/");
+    cout << "Day [01-30] [dd]: ";
+    getline(cin, input);
+    if(validate(1)){return;}
+    buffer.append(input + "/");
 
-    cout << "Year Ex. 2001: ";
-    getline(cin, buffer);
-    if(validate(4, buffer)){return;}
-    bd.append(buffer);
-    if(validate(3, bd)){return;}
-    if((now->tm_year + 1900) - stoi(buffer) < 12){cout << "Anyone who's 13 below cannot use the atm!"<< endl; return;}
-    usr.birthDay = bd;
+    cout << "Year Ex. 2001 [YYYY]: ";
+    getline(cin, input);
+    if(validate(1)){return;}
+    buffer.append(input);
+    if(validate(4)){return;}
+    usr.birthDay = input;
+    buffer = "";
     
     cout << "Please enter in your pincode: ";
-    getline(cin, pincode);
-    if(validate(4, pincode)){return;}
-    if(!(pincode.length() == 6 || pincode.length() == 4)){cout << "Pincode must only be a 4 or 6 digit number!" << endl; return;}
+    getline(cin, input);
+    if(validate(1)){return;}
     cout << "Please re-enter your pincode: ";
     getline(cin, buffer);
-    if(buffer != pincode){cout << "The pincode that you've entered does not match" << endl; return;}
-    usr.pincode = sha256(pincode);
+    if(validate(5)){return;}
+    usr.pincode = sha256(input);
 
     cout << "Please enter initial deposit: ";
-    getline(cin, buffer);
-    if(validate(4, buffer)){return;}
-    if(stoi(buffer) < 5000){cout << "initial deposit must be a minimum of 5000!" << endl; return;}
-    usr.savings = stoi(buffer);
+    getline(cin, input);
+    if(validate(6)){return;}
+    usr.savings = stoi(input);
 
     // confirmation notice
     cout << "\e[1;1H\e[2J" << endl;
@@ -178,9 +127,16 @@ void User::registerAcc(){
     cout << "birthday: " << usr.birthDay << endl;
     cout << "initial Deposit: " << usr.savings << endl;
     cout << "\n\nType [Y] if all of the information are correct.\nType [N] if you want to re-enter our information: ";
-    getline(cin, choice);
-    if(choice == "Y" || choice == "y"){buffer = get_uuid(); cout << "Your uniqe id is: " << buffer << endl; usr.accountNumber = stoi(buffer);system("pause"); 
-    add(usr); menu();}
+    getline(cin, input);
+    if(input == "Y" || input == "y"){
+
+        buffer = get_uuid(); 
+        cout << "Your uniqe id is: " << buffer << endl; 
+        usr.accountNumber = stoi(buffer);
+        system("pause"); 
+        add(usr); 
+        menu();
+    }
 
 
 }
