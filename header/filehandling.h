@@ -50,8 +50,8 @@ void User::saveToAcc(){
     fstream fp;
     UREC pointer = acc;
     
-    decryptStandard("../record.txt.cpt");   //change path to removable storage
-    fp.open("record.txt", ios::out);
+    decryptStandard("../Card.txt.cpt");   //change path to removable storage
+    fp.open("d:/Card.txt", ios::out);
     if(!fp){
         cout<<" Error while creating the file ";     
     }else{  
@@ -60,14 +60,14 @@ void User::saveToAcc(){
         }
     }
         fp.close();
-    encryptStandard("../record.txt");
+    encryptStandard("../Card.txt");
 }
 
 void User::retrieveAcc(){
     fstream fp;
-    decryptStandard("../record.txt.cpt");
+    decryptStandard("../Card.txt.cpt");
     //change path to removable storage
-    fp.open("record.txt", ios::in);
+    fp.open("d:/Card.txt", ios::in);
     if(!fp){
         cout<<" Error while creating the file "; 
     }else{
@@ -80,7 +80,7 @@ void User::retrieveAcc(){
             fp.close();
         }
     }
-    encryptStandard("../record.txt");
+    encryptStandard("../Card.txt");
 }
 
 
@@ -144,7 +144,6 @@ void User::decryptStandard(string path){
     cout << "Key: " << key << " testing: " << query << endl; system("pause");
     system(query.c_str());
 }
-
 
 
 void User::decryptOnOpen(){
