@@ -4,8 +4,8 @@
 
 # Compiler settings - Can be customized.
 CC = g++
-CXXFLAGS = -std=c++11 -Wall
-LDFLAGS = -Wl,-V
+CXXFLAGS = -std=c++11 -Wall -static-libgcc -static-libstdc++ -g -O3
+LDFLAGS = 
 
 # Makefile settings - Can be customized.
 APPNAME = main
