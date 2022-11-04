@@ -62,7 +62,7 @@ class User{
     void openAcc();
     void registerAcc();
     void add(INFO inf);
-
+    void test();
     
     //for Oppended Accounts
     bool checkPin();

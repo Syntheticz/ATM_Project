@@ -1,5 +1,4 @@
 
-
 using namespace std;
 
 #include "validation.h" /// expression
@@ -20,9 +19,7 @@ string get_uuid() {                                                      //will 
 }
 
 
-
-
-UREC* User::locate(int accountNumber){                         // will locate account number
+UREC* User::locate(int accountNumber){                                   // will locate account number
     UREC *pointer = head;
     while(pointer != NULL){
         if(accountNumber == pointer->inf.accountNumber)
@@ -110,7 +107,9 @@ void User::registerAcc(){
     if(validate(4)){registerAcc();}
     usr.birthDay = input;
     buffer = "";
-    
+
+
+    //TODO Asterisk
     cout << "Please enter in your pincode: ";
     getline(cin, input);
     if(validate(1)){registerAcc();}
@@ -139,13 +138,10 @@ void User::registerAcc(){
         buffer = get_uuid(); 
         cout << "Your uniqe id is: " << buffer << endl; 
         usr.accountNumber = stoi(buffer);
-        system("pause"); 
-        add(usr); 
-    }else{
-        registerAcc();
+        add(usr);
+        acc.inf = usr;
+        saveToAcc();
     }
-
-
 }
 
 
@@ -157,11 +153,10 @@ void User::openAcc(){
     {
         cout << "\e[1;1H\e[2J" << endl;
         cout << "Please insert your card!" << endl;
-        fp.open("d:/pincode.code", ios::in);
+        fp.open("g:/pincode.code", ios::in);
         cout << "\e[1;1H\e[2J" << endl;
     } while (!fp);
     fp.seekg(0, ios::end);
-
     if(fp.tellg() == 0){
         fp.close();
         cout << "There is no registered user on this card!" << endl;
@@ -172,7 +167,7 @@ void User::openAcc(){
             registerAcc();
             acc.inf = temp->inf;          
             saveToAcc();
-            fp.open("d:/pincode.code", ios::out);
+            fp.open("g:/pincode.code", ios::out);
             if(fp.is_open()){
                 fp << acc.inf.pincode;
             }
@@ -193,7 +188,7 @@ bool User::checkPin(){
     cout << "Please enter your PIN: ";
     getline(cin, input);
     if(validate(1)){cout << "Please enter a valid PIN!" << endl; system("pause"); checkPin();}
-    if(validatePin()){cout << "Wrong Pin!" << endl; return true;}
+    if(validatePin()){cout << "Wrong Pin!" << endl; return false;}
     userKey = input;
     retrieveAcc();
     if(sha256(input) == acc.inf.pincode){
@@ -225,7 +220,7 @@ void User::withdraw(){
 }
 
 void User::checkBal(){
-    cout << acc.inf.name<< " your current balance is " << acc.inf.savings << endl;
+    cout << acc.inf.name << " your current balance is " << acc.inf.savings << endl;
     system("pause");
 }
 
@@ -387,6 +382,7 @@ void User::accountMenu(){
         /* code */
         break;
     case 7:
+        save();
         saveToAcc();
         exit(0);
         break;
