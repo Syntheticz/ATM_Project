@@ -34,7 +34,7 @@ UREC* User::locate(int accountNumber){                         // will locate ac
 
 
 void User::add(INFO inf){
-    UREC *pointer, *follower, *temp;
+    UREC *pointer, *follower;
     pointer = follower = head;
 
     temp = new UREC;
@@ -64,55 +64,65 @@ void RECEIPT::setTime(){
 
 
 void User::registerAcc(){
+
+    if(isCardInserted()){
+        cout << "A card has already been inserted with an existing user." << endl;
+        cout << "For you to register an account please, remove the card and insert a new one without an existing account."<< endl;
+        system("pause");
+        return;
+    }
+
     INFO usr;
 
     time_t t = time(0);
     tm* now = localtime(&t);
 
-
+    cout << "\e[1;1H\e[2J" << endl;
     cout << "Please enter your name: ";
     getline(cin, input);
-    if(validate(2)){return;}
+    if(validate(2)){registerAcc();}
     usr.name = input;
 
     
 
     cout << "Please enter in yout phone number: +63";
     getline(cin, input);
-    if(validate(3)){return;}
+    if(validate(3)){registerAcc();}
     usr.contact.append("+63");
     usr.contact.append(input);
 
     buffer = "";
     cout << "please enter in your birthday\nMonth [1-12] [MM]:  ";    
     getline(cin, input);
-    if(validate(1)){return;}
+    if(validate(1)){registerAcc();}
     buffer.append(input + "/");
     
     cout << "Day [01-30] [dd]: ";
     getline(cin, input);
-    if(validate(1)){return;}
+    if(validate(1)){registerAcc();}
     buffer.append(input + "/");
 
+    //TODO fix age restrictions
     cout << "Year Ex. 2001 [YYYY]: ";
     getline(cin, input);
-    if(validate(1)){return;}
+    if(validate(1)){registerAcc();}
     buffer.append(input);
-    if(validate(4)){return;}
+    if(validate(4)){registerAcc();}
     usr.birthDay = input;
     buffer = "";
     
     cout << "Please enter in your pincode: ";
     getline(cin, input);
-    if(validate(1)){return;}
+    if(validate(1)){registerAcc();}
     cout << "Please re-enter your pincode: ";
     getline(cin, buffer);
-    if(validate(5)){return;}
+    if(validate(5)){registerAcc();}
+    userKey = input;
     usr.pincode = sha256(input);
 
     cout << "Please enter initial deposit: ";
     getline(cin, input);
-    if(validate(6)){return;}
+    if(validate(6)){registerAcc();}
     usr.savings = stoi(input);
 
     // confirmation notice
@@ -131,11 +141,14 @@ void User::registerAcc(){
         usr.accountNumber = stoi(buffer);
         system("pause"); 
         add(usr); 
-        menu();
+    }else{
+        registerAcc();
     }
 
 
 }
+
+
 
 void User::openAcc(){
     cout << "\e[1;1H\e[2J" << endl;
@@ -144,27 +157,46 @@ void User::openAcc(){
     {
         cout << "\e[1;1H\e[2J" << endl;
         cout << "Please insert your card!" << endl;
-        fp.open("record.txt", ios::in);
+        fp.open("d:/pincode.code", ios::in);
+        cout << "\e[1;1H\e[2J" << endl;
     } while (!fp);
+    fp.seekg(0, ios::end);
+
+    if(fp.tellg() == 0){
+        fp.close();
+        cout << "There is no registered user on this card!" << endl;
+        cout << "Do you want to register? type [Y] for yes and [N] for no: ";
+
+        getline(cin, input);
+        if(input == "y" || input == "Y"){
+            registerAcc();
+            acc.inf = temp->inf;          
+            saveToAcc();
+            fp.open("d:/pincode.code", ios::out);
+            if(fp.is_open()){
+                fp << acc.inf.pincode;
+            }
+        }
+        fp.close();
+    }
     fp.close();
+
+
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Card detected..." << endl;
-    retrieveAcc();
-    system("pause");
-    
+    if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); openAcc();}
+
     accountMenu();
 }
 
 bool User::checkPin(){
-    string pin;
     cout << "Please enter your PIN: ";
-    getline(cin, pin);
-    if(!(regex_match(pin, numberEx))){
-        cout << "Please enter a number!" << endl;
-        return false;
-    }
-
-    if(sha256(pin) == acc.inf.pincode){
+    getline(cin, input);
+    if(validate(1)){cout << "Please enter a valid PIN!" << endl; system("pause"); checkPin();}
+    if(validatePin()){cout << "Wrong Pin!" << endl; return true;}
+    userKey = input;
+    retrieveAcc();
+    if(sha256(input) == acc.inf.pincode){
         return true;
     }
     return false;
@@ -309,7 +341,8 @@ void User::changePin(){
 
 // TODO make user not to enter pin again when wrong on the below choices
 void User::accountMenu(){
-     if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
+    
+
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Welcome to Student Banks Inc." << endl;
     cout << "[1] Balance Inquiry" << endl;
@@ -354,6 +387,7 @@ void User::accountMenu(){
         /* code */
         break;
     case 7:
+        saveToAcc();
         exit(0);
         break;
     default:
