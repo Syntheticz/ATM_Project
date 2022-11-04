@@ -2,11 +2,7 @@
 
 using namespace std;
 
-
 #include "validation.h" /// expression
-
-
-
 
 
 string get_uuid() {                                                      //will generate a unique transaction ID
