@@ -1,4 +1,4 @@
-#include <iostream>
+
 #include <iostream>
 #include <random>
 #include <regex>
@@ -11,36 +11,38 @@
 #include "../sha256.h"
 using namespace std;
 
-regex numberEx("[-+]?([0-9]*\\.[0-9]+|[0-9]+)");
-regex nameEx("^[a-zA-Z\\s]*$");
+regex numberEx("[-+]?([0-9]*\\.[0-9]+|[0-9]+)");          //will check if user put character instead digits
+regex nameEx("^[a-zA-Z\\s]*$");                           //will check if user put digits instead character
 
-typedef struct recipt{
+typedef struct receipt{                                  // structure for user's receipt (resibo)
     string Date;
     float cashIn, cashOut;
 
     void setTime();
-}RECIPT;
+}RECEIPT;                                                // name of struct for receipt
 
-typedef struct list{
-    RECIPT rec;
+typedef struct list{                                   
+    RECEIPT rec;
     string transactionID;
     struct list *next;
 
 }LIST;
 
-typedef struct info{
-    string name, birthDay, contact, pincode;
-    int accountNumber;
-    float savings;
+typedef struct info{                                   // structure for informations of user
+    string name, birthDay, contact, pincode;           // string for name, birthday, contact, and pincode of users
+    int accountNumber;                                 // for account numbers of users
+    float savings;                                     
 
-}INFO;
+}INFO;                                                 // name of structure for info of user
 
-typedef struct userRecords{
-    LIST *recipt;
-    INFO inf;
-    struct userRecords *next;
-}UREC;
+typedef struct userRecords{                            // struct for the records of user
+    LIST *receipt;                                     // contains struct for receipt of user
+    INFO inf;                                          // contains struct for info of user
+    struct userRecords *next;                          // pointer for user's record
+}UREC;                                                 // name of struct
 
+
+//OOP class for user's atm
 class User{
     private:
     string key;
