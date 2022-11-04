@@ -44,10 +44,14 @@ typedef struct userRecords{                            // struct for the records
 
 //OOP class for user's atm
 class User{
+    private:
+    string key;
+
     protected:
     UREC *head;
     UREC acc;
 
+    string input, buffer;
     public:
 
 
@@ -56,7 +60,7 @@ class User{
     void openAcc();
     void registerAcc();
     void add(INFO inf);
-    bool validate(int mode, string value);
+    bool validate(int mode);
     
     //for Oppended Accounts
     bool checkPin();
@@ -72,6 +76,14 @@ class User{
     void retrieve();
     void retrieveAcc();
 
+    //Cryptography
+    void encryptOnOpen();
+    void encryptStandard(string path);
+    void encryptOnClose();
+    void decryptOnOpen();
+    void decryptStandard(string path);
+    void setKey(string key);
+
     UREC* locate(int accountNumber);
     void accountMenu();
     // TODO Add features.    
@@ -79,4 +91,8 @@ class User{
 
 void User::setHead(){
     head = NULL;
+}
+
+void User::setKey(string key){
+    this->key = key;
 }

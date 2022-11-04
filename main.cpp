@@ -639,13 +639,12 @@ void User::menu(){
 
 
 int main(){
-    User us;
-    us.setHead();
-    us.retrieve("records.txt", 1);
-    while (1)
-    {
-        us.menu();
-    }
+   User us;
+   us.setHead();
+   us.retrieve();
+   while(1){
+      us.menu();
+   }
 
 
 }
