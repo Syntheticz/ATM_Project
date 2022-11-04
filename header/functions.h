@@ -3,15 +3,15 @@
 using namespace std;
 
 
-#include "validation.h"
-/// expression
+#include "validation.h" /// expression
 
 
 
-//Generate a unique transactio ID
-string get_uuid() {
 
-    static mt19937 rng(time(0));
+
+string get_uuid() {                                                      //will generate a unique transaction ID
+
+    static mt19937 rng(time(0));                                         // random number generator
 
     uniform_int_distribution<int> dist(0, 9);
 
@@ -26,7 +26,7 @@ string get_uuid() {
 
 
 
-UREC* User::locate(int accountNumber){
+UREC* User::locate(int accountNumber){                         // will locate account number
     UREC *pointer = head;
     while(pointer != NULL){
         if(accountNumber == pointer->inf.accountNumber)
@@ -60,7 +60,7 @@ void User::add(INFO inf){
 }
 
 
-void RECIPT::setTime(){
+void RECEIPT::setTime(){
     time_t now = time(0);
     Date = ctime(&now);
 }
