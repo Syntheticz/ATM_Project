@@ -1,7 +1,7 @@
 #include "dataStructure.h"
 
 void User::save(){
-    decryptStandard("../records.txt.cpt");
+    decryptStandard("../records.txt.cpt", mainKey);
     fstream fp;
     UREC *pointer = head;
     fp.open("records.txt", ios::out);
@@ -19,7 +19,6 @@ void User::save(){
 
 
 void User::retrieve(){
-
     decryptOnOpen();
     fstream fp;
     INFO rec;
@@ -36,12 +35,11 @@ void User::retrieve(){
                     add(rec);
                 }else{
                     break;
-                }
-               
+                }       
 
             }
             fp.close();
-            encryptStandard("../records.txt");
+            encryptStandard("../records.txt", mainKey);
         }
     }
 }
@@ -49,25 +47,32 @@ void User::retrieve(){
 void User::saveToAcc(){
     fstream fp;
     UREC pointer = acc;
-    
-    decryptStandard("../Card.txt.cpt");   //change path to removable storage
-    fp.open("d:/Card.txt", ios::out);
+    // decryptStandard("g:/Card.txt.cpt", userKey);
+    fp.open("g:/Card.txt", ios::out);
     if(!fp){
         cout<<" Error while creating the file ";     
     }else{  
-        while(!(fp.eof())){
-            fp << pointer.inf.name << "\n" << pointer.inf.accountNumber << " " << pointer.inf.pincode << " " << pointer.inf.birthDay << " " << pointer.inf.savings << endl;    
-        }
+            fp << pointer.inf.name << "\n" << pointer.inf.accountNumber << " " << pointer.inf.pincode << " " << pointer.inf.birthDay << " " << pointer.inf.savings << endl;     
     }
-        fp.close();
-    encryptStandard("../Card.txt");
+    fp.clear();
+    fp.close();
+
+
+    fp.open("g:/pincode.code", ios::out);
+    if(fp.is_open()){
+       fp << pointer.inf.pincode;
+    }
+    fp.close();
+    // encryptStandard("g:/Card.txt", userKey);
 }
+
+
 
 void User::retrieveAcc(){
     fstream fp;
-    decryptStandard("../Card.txt.cpt");
     //change path to removable storage
-    fp.open("d:/Card.txt", ios::in);
+    // decryptStandard("g:/Card.txt.cpt", userKey);
+    fp.open("g:/Card.txt", ios::in);
     if(!fp){
         cout<<" Error while creating the file "; 
     }else{
@@ -80,7 +85,7 @@ void User::retrieveAcc(){
             fp.close();
         }
     }
-    encryptStandard("../Card.txt");
+    // encryptStandard("g:/Card.txt", userKey);
 }
 
 
@@ -101,7 +106,7 @@ void User::encryptOnOpen(){
     if(fp.is_open()){
         while(!(fp.eof())){
             getline(fp, input);  
-            setKey(input);
+            setMainKey(input);
             fp.ignore();
         }
         input = sha256(input);
@@ -118,30 +123,27 @@ void User::encryptOnOpen(){
 
 void User::encryptOnClose(){
     fstream fp;
-    string query = "cd crypt && ccrypt -e ../records.txt -K " + key;
+    string query = "cd crypt && ccrypt -e ../records.txt -K " + mainKey;
     system(query.c_str());
 
     fp.open("key.key", ios::out);
     if(!fp){
         cout<<" Error while creating the file ";     
     }else{  
-        fp << key << endl;    
+        fp << mainKey << endl;    
     }
 }
 
 
 
-void User::encryptStandard(string path){
+void User::encryptStandard(string path, string key){
     string query = "cd crypt && ccrypt -e " + path + " -K " + key;
-    cout << "Key: " << key << " testing: " << query << endl; system("pause");
     system(query.c_str());
     system("del key.key");
 }
 
-void User::decryptStandard(string path){
-    if(validate(7)){cout << "Wrong Key!" << endl; system("pause"); return;}
+void User::decryptStandard(string path, string key){
     string query = "cd crypt && ccrypt -d " + path + " -K " + key;
-    cout << "Key: " << key << " testing: " << query << endl; system("pause");
     system(query.c_str());
 }
 
@@ -157,7 +159,7 @@ void User::decryptOnOpen(){
     } while (!fp);
 
     if(fp.is_open()){
-        fp >> key;
+        fp >> mainKey;
         fp.ignore();
     }
 

@@ -45,22 +45,24 @@ typedef struct userRecords{                            // struct for the records
 //OOP class for user's atm
 class User{
     private:
-    string key;
-
-    protected:
     UREC *head;
     UREC acc;
 
-    string input, buffer;
+    UREC *temp;
+
+    string input, buffer, mainKey, userKey;
     public:
 
-
+    //Getters and Setters
     void setHead();
+    void setMainKey(string key);
+    void setUserKey(string key);
+
     void menu();
     void openAcc();
     void registerAcc();
     void add(INFO inf);
-    bool validate(int mode);
+    void test();
     
     //for Oppended Accounts
     bool checkPin();
@@ -75,14 +77,19 @@ class User{
     void saveToAcc();
     void retrieve();
     void retrieveAcc();
+    void saveUserKey();
+
+    //Validations
+    bool validate(int mode);
+    bool validatePin();
+    bool isCardInserted();
 
     //Cryptography
     void encryptOnOpen();
-    void encryptStandard(string path);
+    void encryptStandard(string path, string key);
     void encryptOnClose();
     void decryptOnOpen();
-    void decryptStandard(string path);
-    void setKey(string key);
+    void decryptStandard(string path, string key);
 
     UREC* locate(int accountNumber);
     void accountMenu();
@@ -93,6 +100,10 @@ void User::setHead(){
     head = NULL;
 }
 
-void User::setKey(string key){
-    this->key = key;
+void User::setMainKey(string key){
+    mainKey = key;
+}
+
+void User::setUserKey(string key){
+    userKey = key;
 }

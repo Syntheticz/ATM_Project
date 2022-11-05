@@ -12,7 +12,7 @@ extern "C" char* strptime(const char* str, const char* format, struct tm* time) 
 }
 
 
-bool User::validate(int mode){
+bool User::validate(int mode){                          //Returns True if invalid
     //Date Variables
     struct tm timeStruct;
     time_t t = time(0);
@@ -83,7 +83,7 @@ bool User::validate(int mode){
         fp.open("key.ink", ios::in);
         if(fp){ fp >> buffer;}
         fp.close();
-        if(sha256(key) != buffer){
+        if(sha256(mainKey) != buffer){
             return true;
         }
         break;
@@ -95,5 +95,33 @@ bool User::validate(int mode){
 }
 
 
+bool User::validatePin(){                   //Returns true if invalid
+    fstream fp;
+    fp.open("d:/pincode.code", ios::in);
+    if(fp){
+        fp >> buffer;
+        
+       system("pause");
+    }else{
+        cout << "key is missing!" << endl;
+        
+        return true;                        
+    }   
+    fp.close();
+    
+    if(sha256(input) != buffer){
+        cout << "This is a test: " << buffer << " and " << sha256(input) << endl;
+        system("pause");
+        return true;
+    }
+    return false;
+}
 
-
+bool User::isCardInserted(){
+    fstream fp, fs;
+    fp.open("g:/Card.txt.cpt", ios::in);
+    if(fp){
+        return true;
+    }
+    return false;
+}

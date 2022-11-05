@@ -42,11 +42,10 @@ Check the pin.code file in card if not present the program will ask to “Please
 
 TODO:
   URGENT: 
-  Dapat pag nag eenter ng pin *.
+  Dapat pag nag eenter ng pin *. // needed
   Optimized code 
     header files
      -functions : 
-        main functionalities 
         calculations
         expressions defines, constants
         security
@@ -60,12 +59,12 @@ TODO:
         inputs validation
         data validation
 
-  automatically savings with encyprtion
+
   better way to clear the screen*
-  encrption for sign in use pincode for key to decrypt file.
+
   encyption every transaction
   for deposit must be bills
-  salted Encrypted pincode
+  salted Encrypted pincode 
   better UI
   Operators key
         
