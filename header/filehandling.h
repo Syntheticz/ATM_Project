@@ -20,7 +20,7 @@ void User::save(){
 
 void User::retrieve(){
 
-    decryptOnOpen();
+    // decryptOnOpen();
     fstream fp;
     INFO rec;
     fp.open("records.txt", ios::in);
@@ -41,7 +41,7 @@ void User::retrieve(){
 
             }
             fp.close();
-            encryptStandard("../records.txt");
+            // encryptStandard("../records.txt");
         }
     }
 }
