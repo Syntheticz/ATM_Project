@@ -33,7 +33,7 @@ all: $(APPNAME)
 
 # Builds the app
 $(APPNAME): $(OBJ)
-	$(CC) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) && ./main
+	$(CC) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) && main
 
 # Creates the dependecy rules
 %.d: $(SRCDIR)/%$(EXT)

@@ -67,12 +67,12 @@ class User{
     void menu();
     void openAcc();
     void registerAcc();
-    void add(INFO inf);
+    void add(UREC *temp);
     string asteriskPass();
     void test();
     
     //for Oppended Accounts
-    bool checkPin();
+    void checkPin();
     void checkBal();
     void withdraw();
     void deposit();
@@ -103,6 +103,10 @@ class User{
     UREC* locate(int accountNumber);
     void accountMenu();
     // TODO Add features.    
+
+    //Debug
+    void displayList();
+    void displayAcc();
 };
 
 void User::setHead(){

@@ -33,12 +33,12 @@ UREC* User::locate(int accountNumber){                         // will locate ac
 }
 
 
-void User::add(INFO inf){                                      // function for users if they want to register/open atm
-    UREC *pointer, *follower, *temp;
+void User::add(UREC *temp){                                      // function for users if they want to register/open atm
+    UREC *pointer, *follower, *t;
     pointer = follower = head;
 
-    temp = new UREC;
-    temp->inf = inf; 
+    t = new UREC;
+    t->inf = temp->inf;
 
     while (pointer != NULL)
     {
@@ -47,10 +47,10 @@ void User::add(INFO inf){                                      // function for u
     }
 
     if(head == pointer){
-        head = temp;
+        head = t;
     }else{
-        follower->next = temp;
-        temp->next = pointer;
+        follower->next = t;
+        t->next = pointer;
     }
 
 }
@@ -64,7 +64,7 @@ void User::registerAcc(){                                    // Function for reg
         return;
     }
 
-    INFO usr;
+    UREC *usr = new UREC;
 
     time_t t = time(0);                                      // setting real-time
     tm* now = localtime(&t);
@@ -73,7 +73,7 @@ void User::registerAcc(){                                    // Function for reg
     cout << "Please enter your name: ";                     // gets user's name
     getline(cin, input);
     if(validate(2)){registerAcc();}                                         // will validate if user's passed name validation
-    usr.name = input;
+    usr->inf.name = input;
     system("cls");
 
     
@@ -81,8 +81,8 @@ void User::registerAcc(){                                    // Function for reg
     cout << "Please enter your phone number: +639";          // gets user's contact number
     getline(cin, input); 
     if(validate(3)){registerAcc();}                          // will validate user's contact number but actually only counts if digits<10
-    usr.contact.append("+639");
-    usr.contact.append(input);
+    usr->inf.contact.append("+639");
+    usr->inf.contact.append(input);
 
     buffer = "";
     cout << "Please enter your birthday\nMonth [1-12] [MM]:  ";    //gets user's birthdate 
@@ -104,7 +104,7 @@ void User::registerAcc(){                                    // Function for reg
     year = stoi(input);
     buffer.append(input);
     if(validate(4)){registerAcc();}
-    usr.birthDay = buffer;
+    usr->inf.birthDay = buffer;
     buffer = "";
 
 
@@ -116,29 +116,29 @@ void User::registerAcc(){                                    // Function for reg
     buffer = asteriskPass();
     if(validate(5)){registerAcc();}
     userKey = input;
-    usr.pincode = sha256(input);
+    usr->inf.pincode = sha256(input);
 
     cout << "\nPlease enter initial deposit: ";
     getline(cin, input);
     if(validate(6)){registerAcc();}
-    usr.savings = stoi(input);
+    usr->inf.savings = stoi(input);
 
     // confirmation notice
     cout << "\e[1;1H\e[2J" << endl;
     cout << "\nPlease confirm your information!" << endl;
-    cout << "Name: " << usr.name << endl;
-    cout << "Number: " << usr.contact << endl;
-    cout << "birthday: " << usr.birthDay << endl;
-    cout << "initial Deposit: " << usr.savings << endl;
+    cout << "Name: " << usr->inf.name << endl;
+    cout << "Number: " << usr->inf.contact << endl;
+    cout << "birthday: " << usr->inf.birthDay << endl;
+    cout << "initial Deposit: " << usr->inf.savings << endl;
     cout << "\n\nType [Y] if all of the information are correct.\nType [N] if you want to re-enter our information: ";
     getline(cin, input);
     if(input == "Y" || input == "y"){
 
         buffer = get_uuid(); 
         cout << "Your unique id is: " << buffer << endl; 
-        usr.accountNumber = stoi(buffer);
+        usr->inf.accountNumber = stoi(buffer);
         add(usr);
-        acc.inf = usr;
+        acc.inf = usr->inf;
         saveToAcc();
     }
 }
@@ -188,35 +188,40 @@ void User::openAcc(){
         if(input == "y" || input == "Y"){
             registerAcc();
             acc.inf = temp->inf;          
-            saveToAcc();
             fp.open("g:/pincode.code", ios::out);
             if(fp.is_open()){
                 fp << acc.inf.pincode;
             }
-        }
-        fp.close();
+            fp.close();
+
+            
+            }else{
+                return;
+            }
     }
-    fp.close();
-
-
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Card detected..." << endl;
-    if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); openAcc();}
 
-    accountMenu();
+    checkPin();
+
+    while(1){
+        accountMenu();
+    }
+
+
+   
 }
 
-bool User::checkPin(){
+void User::checkPin(){
+    START:
     cout << "Please enter your PIN: ";
-    getline(cin, input);
-    if(validate(1)){cout << "Please enter a valid PIN!" << endl; system("pause"); checkPin();}
-    if(validatePin()){cout << "Wrong Pin!" << endl; return false;}
+    input = asteriskPass();
+    if(validate(1)){cout << "Please enter a valid PIN!" << endl; system("pause"); goto START;}
+    if(validatePin()){cout << "\e[1;1H\e[2J" << endl; cout << "\nWrong Pin!" << endl; system("pause"); goto START;}
     userKey = input;
     retrieveAcc();
-    if(sha256(input) == acc.inf.pincode){
-        return true;
-    }
-    return false;
+
+    
 }
 
 void User::withdraw(){
@@ -359,8 +364,6 @@ void User::changePin(){
 
 // TODO make user not to enter pin again when wrong on the below choices
 void User::accountMenu(){
-    if(!(checkPin())){cout << "WRONG PIN!" << endl; system("pause"); accountMenu();}
-
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Welcome to Student Banks Inc." << endl;
     cout << "[1] Balance Inquiry" << endl;
@@ -382,23 +385,23 @@ void User::accountMenu(){
     switch (stoi(c))
     {
     case 1:
-        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
+        checkPin();
         checkBal();
         break;
     case 2:
-        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
+        checkPin();
         withdraw();
         break;
     case 3:
-        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
+        checkPin();
         deposit();
         break;
     case 4:
-        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
+        checkPin();
         fundTransfer();
         break;
     case 5:
-        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); accountMenu();}
+        checkPin();
         changePin();
         break;
     case 6:
@@ -447,7 +450,7 @@ void User::menu(){
         openAcc();
         break;
     case 3:
-        save();
+        if(head != NULL){ save();}
         exit(0);
         break;
     default:

@@ -110,18 +110,14 @@ bool User::validatePin(){                   //Returns true if invalid
     fp.open("d:/pincode.code", ios::in);
     if(fp){
         fp >> buffer;
-        
-       system("pause");
     }else{
         cout << "key is missing!" << endl;
-        
+        system("pause");
         return true;                        
     }   
     fp.close();
     
     if(sha256(input) != buffer){
-        cout << "This is a test: " << buffer << " and " << sha256(input) << endl;
-        system("pause");
         return true;
     }
     return false;
@@ -149,6 +145,9 @@ bool User::isLeap(int year){
 bool User::isValidDate(int d, int m, int y){
     // If year, month and day
     // are not in given range
+    if(m > 12 || m < 1)
+        return false;
+
     if (y > MAX_VALID_YR || y < MIN_VALID_YR){
         return false;
         if (m < 1 || m > 12)
