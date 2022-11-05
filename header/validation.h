@@ -84,9 +84,22 @@ bool User::validate(int mode){                          //Returns True if invali
         //validate initial Deposit
         validate(1);
         if(stoi(input) < 5000){
-            cout << "Initial deposit must be a minimum of 5000!" << endl;
+            cout << "Initial deposit must be a minimum of 5,000php!" << endl;
             system("pause");
             return true;
+           
+        }
+        if (stoi(input) > 100000){
+            cout<<"Maximum deposit amount must only be 100,000php"<<endl;
+            system("pause");
+            return true;
+         
+        }
+        if(stof(input) == 0){
+            cout << "Please enter a valid amount!" << endl;
+            system("pause");
+            return true;
+           
         }
         break;
      case 7:
