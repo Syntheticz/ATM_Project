@@ -4,7 +4,7 @@
 
 # Compiler settings - Can be customized.
 CC = g++
-CXXFLAGS = -std=c++11 -Wall -static-libgcc -static-libstdc++ -g -O3
+CXXFLAGS = -std=c++11 -static-libgcc -static-libstdc++ -g
 LDFLAGS = 
 
 # Makefile settings - Can be customized.
@@ -33,7 +33,7 @@ all: $(APPNAME)
 
 # Builds the app
 $(APPNAME): $(OBJ)
-	$(CC) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) && ./main
 
 # Creates the dependecy rules
 %.d: $(SRCDIR)/%$(EXT)

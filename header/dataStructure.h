@@ -2,6 +2,8 @@
 #include <iostream>
 #include <random>
 #include <regex>
+#include <conio.h>
+#include <string>
 #include <ctime>
 #include <time.h>
 #include <iomanip>
@@ -13,6 +15,9 @@ using namespace std;
 
 regex numberEx("[-+]?([0-9]*\\.[0-9]+|[0-9]+)");          //will check if user put character instead digits
 regex nameEx("^[a-zA-Z\\s]*$");                           //will check if user put digits instead character
+
+const int MAX_VALID_YR = 9999;                             // Returns true if
+const int MIN_VALID_YR = 1800;                             // given year is valid.
 
 typedef struct receipt{                                  // structure for user's receipt (resibo)
     string Date;
@@ -49,7 +54,8 @@ class User{
     UREC acc;
 
     UREC *temp;
-
+    
+    int month, day, year;
     string input, buffer, mainKey, userKey;
     public:
 
@@ -62,6 +68,7 @@ class User{
     void openAcc();
     void registerAcc();
     void add(INFO inf);
+    string asteriskPass();
     void test();
     
     //for Oppended Accounts
@@ -81,6 +88,8 @@ class User{
 
     //Validations
     bool validate(int mode);
+    bool isLeap(int year);
+    bool isValidDate(int d, int m, int y);
     bool validatePin();
     bool isCardInserted();
 

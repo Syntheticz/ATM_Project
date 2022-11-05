@@ -1,10 +1,13 @@
 
-using namespace std;
 
 #include "validation.h" /// expression
 
+void RECEIPT::setTime(){                                                  ////Function to set real-time in receipt of user
+    time_t now = time(0);
+    Date = ctime(&now);
+}
 
-string get_uuid() {                                                      //will generate a unique transaction ID
+string get_uuid() {                                                      //will generate a unique transaction number
 
     static mt19937 rng(time(0));                                         // random number generator
 
@@ -19,19 +22,19 @@ string get_uuid() {                                                      //will 
 }
 
 
-UREC* User::locate(int accountNumber){                                   // will locate account number
-    UREC *pointer = head;
+UREC* User::locate(int accountNumber){                         // will locate account number
+    UREC *pointer = head;                                      // set head pointer to null
     while(pointer != NULL){
-        if(accountNumber == pointer->inf.accountNumber)
-         return pointer;
-        pointer = pointer->next;
+        if(accountNumber == pointer->inf.accountNumber)        // if the account number is registered to our system
+         return pointer;                                       // it will return pointer
+        pointer = pointer->next;                               // then the pointer will point next
     }
-    return NULL;
+    return NULL;                                               // then return null
 }
 
 
-void User::add(INFO inf){
-    UREC *pointer, *follower;
+void User::add(INFO inf){                                      // function for users if they want to register/open atm
+    UREC *pointer, *follower, *temp;
     pointer = follower = head;
 
     temp = new UREC;
@@ -53,73 +56,69 @@ void User::add(INFO inf){
 }
 
 
-void RECEIPT::setTime(){
-    time_t now = time(0);
-    Date = ctime(&now);
-}
-
-
-
-void User::registerAcc(){
-
-    if(isCardInserted()){
-        cout << "A card has already been inserted with an existing user." << endl;
-        cout << "For you to register an account please, remove the card and insert a new one without an existing account."<< endl;
-        system("pause");
+void User::registerAcc(){                                    // Function for registering/opening acc/atm
+    
+    if(isCardInserted()){                                   //if usb is detected to be registered this will appear
+        cout << "Please insert different card to register.\nThis card was already registered. \nPlease proceed to sign-in." << endl;
+        system("pause");                                     
         return;
     }
 
     INFO usr;
 
-    time_t t = time(0);
+    time_t t = time(0);                                      // setting real-time
     tm* now = localtime(&t);
 
     cout << "\e[1;1H\e[2J" << endl;
-    cout << "Please enter your name: ";
+    cout << "Please enter your name: ";                     // gets user's name
     getline(cin, input);
-    if(validate(2)){registerAcc();}
+    if(validate(2)){registerAcc();}                                         // will validate if user's passed name validation
     usr.name = input;
+    system("cls");
 
     
-
-    cout << "Please enter in yout phone number: +63";
-    getline(cin, input);
-    if(validate(3)){registerAcc();}
-    usr.contact.append("+63");
+    cout <<"Welcome to Student Bank Inc., "<<input<<endl;
+    cout << "Please enter your phone number: +639";          // gets user's contact number
+    getline(cin, input); 
+    if(validate(3)){registerAcc();}                          // will validate user's contact number but actually only counts if digits<10
+    usr.contact.append("+639");
     usr.contact.append(input);
 
     buffer = "";
-    cout << "please enter in your birthday\nMonth [1-12] [MM]:  ";    
+    cout << "Please enter your birthday\nMonth [1-12] [MM]:  ";    //gets user's birthdate 
     getline(cin, input);
-    if(validate(1)){registerAcc();}
+    month = stoi(input);
+    if(validate(1)){registerAcc();}                                // will validate if input is correct
     buffer.append(input + "/");
     
-    cout << "Day [01-30] [dd]: ";
+    cout << "Day [01-30] [dd]: ";                                  //gets user's birthmonth 
     getline(cin, input);
-    if(validate(1)){registerAcc();}
+    day = stoi(input);
+    if(validate(1)){registerAcc();}                                // will validate if input is correct
     buffer.append(input + "/");
 
     //TODO fix age restrictions
-    cout << "Year Ex. 2001 [YYYY]: ";
+    cout << "Year Ex. 2001 [YYYY]: ";                               //gets user's birthyear
     getline(cin, input);
-    if(validate(1)){registerAcc();}
+    if(validate(1)){registerAcc();}                                // will validate if input is correct
+    year = stoi(input);
     buffer.append(input);
     if(validate(4)){registerAcc();}
-    usr.birthDay = input;
+    usr.birthDay = buffer;
     buffer = "";
 
 
-    //TODO Asterisk
+   
     cout << "Please enter in your pincode: ";
-    getline(cin, input);
+    input = asteriskPass();
     if(validate(1)){registerAcc();}
-    cout << "Please re-enter your pincode: ";
-    getline(cin, buffer);
+    cout << "\nPlease re-enter your pincode: ";
+    buffer = asteriskPass();
     if(validate(5)){registerAcc();}
     userKey = input;
     usr.pincode = sha256(input);
 
-    cout << "Please enter initial deposit: ";
+    cout << "\nPlease enter initial deposit: ";
     getline(cin, input);
     if(validate(6)){registerAcc();}
     usr.savings = stoi(input);
@@ -136,7 +135,7 @@ void User::registerAcc(){
     if(input == "Y" || input == "y"){
 
         buffer = get_uuid(); 
-        cout << "Your uniqe id is: " << buffer << endl; 
+        cout << "Your unique id is: " << buffer << endl; 
         usr.accountNumber = stoi(buffer);
         add(usr);
         acc.inf = usr;
@@ -144,7 +143,30 @@ void User::registerAcc(){
     }
 }
 
+string User::asteriskPass(){
+    char pin[6];
+    int i=0;
+    char a;
+    for (i=0;;){
+        a=getch();
+        if(a>='0'&& a<='9'){
+            pin[i]=a;
+            ++i;
+            cout<<"*";
+        }
+        if(a=='\r'){
+            pin[i]='\0';
+            break;
+        }
+        if(a=='\b'&&i>=1){
+            cout<<"\b \b";
+            --i;
+        }
 
+    }
+    string finals = string(pin);
+    return finals;
+}
 
 void User::openAcc(){
     cout << "\e[1;1H\e[2J" << endl;
@@ -403,7 +425,7 @@ void User::menu(){
     cout << "[1]. Registration" << endl;
     cout << "[2]. Sign in" << endl;
     cout << "[3]. Exit" << endl;
-    cout << "Pease enter [1-3]: ";
+    cout << "Please enter [1-3]: ";
 
     getline(cin, choice);
 
