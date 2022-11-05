@@ -136,7 +136,7 @@ void User::registerAcc(){
     if(input == "Y" || input == "y"){
 
         buffer = get_uuid(); 
-        cout << "Your uniqe id is: " << buffer << endl; 
+        cout << "Your unique id is: " << buffer << endl; 
         usr.accountNumber = stoi(buffer);
         add(usr);
         acc.inf = usr;
@@ -403,7 +403,7 @@ void User::menu(){
     cout << "[1]. Registration" << endl;
     cout << "[2]. Sign in" << endl;
     cout << "[3]. Exit" << endl;
-    cout << "Pease enter [1-3]: ";
+    cout << "Please enter [1-3]: ";
 
     getline(cin, choice);
 
