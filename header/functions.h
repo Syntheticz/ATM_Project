@@ -306,10 +306,11 @@ void User::changePin(){
     string pin, buffer;
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Change Pin..." << endl;
-    cout << "Please enter in your current pin: ";
+    cout << "Please enter your current pin: ";
     getline(cin, pin);
+    cout <<"*"<< pin<<endl;
     if(!(regex_match(pin, numberEx))){
-        cout << "Please enter a number!" << endl;
+        cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
         changePin();
     }
     if(sha256(pin) != acc.inf.pincode){
@@ -336,7 +337,7 @@ void User::changePin(){
 
 // TODO make user not to enter pin again when wrong on the below choices
 void User::accountMenu(){
-    
+    if(!(checkPin())){cout << "WRONG PIN!" << endl; system("pause"); accountMenu();}
 
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Welcome to Student Banks Inc." << endl;
@@ -351,7 +352,7 @@ void User::accountMenu(){
     string c;
     getline(cin, c);
     if(!(regex_match(c, numberEx))){
-        cout << "Please enter a number!" << endl;
+        cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
         return;
     }
     
@@ -387,7 +388,7 @@ void User::accountMenu(){
         exit(0);
         break;
     default:
-        cout << "Please enter in a valid choice!" << endl;
+        cout << "Please enter numbers 1-7 only!" << endl;
         break;
     }
 
@@ -428,7 +429,7 @@ void User::menu(){
         exit(0);
         break;
     default:
-        cout << "Please enter a valid choice!" << endl;
+        cout << "Please enter numbers 1-3 only!" << endl;
         break;
     }
 
