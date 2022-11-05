@@ -42,8 +42,19 @@ Check the pin.code file in card if not present the program will ask to “Please
 
 TODO:
   URGENT: 
-  Dapat pag nag eenter ng pin *. // needed
-  Optimized code 
+  RESIBO
+  transaction history
+   type
+   tnumber
+   amount
+   date and time
+   repient
+   sender
+
+   Optimized code & bugfix
+   dropdown
+
+
     header files
      -functions : 
         calculations
@@ -60,8 +71,7 @@ TODO:
         data validation
 
 
-  better way to clear the screen*
-
+  better way to clear the screen* 
   encyption every transaction
   for deposit must be bills
   salted Encrypted pincode 

@@ -24,7 +24,7 @@ bool User::validate(int mode){                          //Returns True if invali
     case 1:
         //Validate if the input is a number
         if(!(regex_match(input, numberEx))){
-            cout << "Please enter a number!" << endl;
+            cout << "\nPLEASE ENTER NUMBERS ONLY!" << endl;
             system("pause");
             return true;
         }
@@ -32,7 +32,7 @@ bool User::validate(int mode){                          //Returns True if invali
     case 2:
         //Validate if the input is a valid name
         if(!(regex_match(input, nameEx))){
-            cout << "the name you entered is not a valid one." << endl;
+            cout << "INVALID NAME" << endl;
             system("pause");
             return true;
         }
@@ -40,19 +40,29 @@ bool User::validate(int mode){                          //Returns True if invali
     case 3:
         //Validate contact number
         validate(1);
-        if(input.length() != 10){
-            cout << " Please enter in a valid number! Ex. +639123456789" << endl;
+        if(input.length() != 9){
+            cout << " INVALID CONTACT NUMBER! Ex. +639123456789" << endl;
+            system("pause");
             return true;
         }
         break;
     case 4:
         //Validate date
-        if(!(strptime(buffer.c_str(), "%m/%d/%Y", &timeStruct))){
-            cout << " Please enter in a valid date! month/day/year." << endl;
+        if (!isValidDate(day, month, year)){
+            cout << "INVALID DATE"<<endl;
+            system("pause");
             return true;
+
+
         }
-        if((now->tm_year + 1900) - stoi(buffer) < 12){
+        // if(!(strptime(buffer.c_str(), "%m/%d/%Y", &timeStruct))){
+        //     cout << " Please enter in a valid date! month/day/year." << endl;
+        //     system("pause");
+        //     return true;
+        // }
+        if((now->tm_year + 1900) - year < 12){
             cout << "Anyone who's 13 below cannot use the atm!"<< endl; 
+            system("pause");
             return true;
         }
         break;
@@ -65,7 +75,7 @@ bool User::validate(int mode){                          //Returns True if invali
             return true;
             }
         if(buffer.length() > 1 && buffer != input){
-            cout << "The pincode that you've entered does not match" << endl; 
+            cout << "PINCODE DOES NOT MATCH!" << endl; 
             system("pause");
             return true;
         }
@@ -74,7 +84,7 @@ bool User::validate(int mode){                          //Returns True if invali
         //validate initial Deposit
         validate(1);
         if(stoi(input) < 5000){
-            cout << "initial deposit must be a minimum of 5000!" << endl;
+            cout << "Initial deposit must be a minimum of 5000!" << endl;
             system("pause");
             return true;
         }
@@ -124,4 +134,44 @@ bool User::isCardInserted(){
         return true;
     }
     return false;
+}
+
+      
+bool User::isLeap(int year){
+    // Return true if year
+    // is a multiple of 4 and
+    // not multiple of 100.
+    // OR year is multiple of 400.
+    return (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0));}
+        
+ // Returns true if given
+// year is valid or not.
+bool User::isValidDate(int d, int m, int y){
+    // If year, month and day
+    // are not in given range
+    if (y > MAX_VALID_YR || y < MIN_VALID_YR){
+        return false;
+        if (m < 1 || m > 12)
+        return false;
+        if (d < 1 || d > 31)
+        return false;
+    }
+    // Handle February month
+    // with leap year
+    if (m == 2){
+        if (isLeap(y))
+        return (d <= 29);
+    }else{
+         return (d <= 28);
+    }
+        // Months of April, June,
+        // Sept and Nov must have
+        // number of days less than
+        // or equal to 30.
+        if (m == 4 || m == 6 || m == 9 || m == 11){
+           return (d <= 30);
+        
+            return true;
+        }
+    
 }
