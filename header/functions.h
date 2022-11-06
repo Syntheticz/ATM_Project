@@ -26,9 +26,8 @@ UREC* User::locate(int accountNumber){                         // will locate ac
     UREC *pointer = head;                                      // set head pointer to null
     while(pointer != NULL){
         if(accountNumber == pointer->inf.accountNumber)        // if the account number is registered to our system
-         return pointer;                                       // it will return pointer
-        pointer = pointer->next;                               // then the pointer will point next
-    }
+         return pointer;  pointer = pointer->next;             // it will return pointer            
+    }                                                          // then the pointer will point next
     return NULL;                                               // then return null
 }
 
@@ -60,8 +59,7 @@ void User::registerAcc(){                                    // Function for reg
     
     if(isCardInserted()){                                   //if usb is detected to be registered this will appear
         cout << "Please insert different card to register.\nThis card was already registered. \nPlease proceed to sign-in." << endl;
-        system("pause");                                     
-        return;
+        system("pause"); return;                                     
     }
 
     INFO usr;
@@ -137,16 +135,13 @@ void User::registerAcc(){                                    // Function for reg
         buffer = get_uuid(); 
         cout << "Your unique id is: " << buffer << endl; 
         usr.accountNumber = stoi(buffer);
-        add(usr);
-        acc.inf = usr;
-        saveToAcc();                                                      // if user confirms, all details will save 
+        add(usr); acc.inf = usr; saveToAcc();      // if user confirms, all details will save                                   
     }
 }
 
 string User::asteriskPass(){                                              //asterisk password
-    char pin[6];
+    char a, pin[6];
     int i=0;
-    char a;
     for (i=0;;){
         a=getch();
         if(a>='0'&& a<='9'){                                            //if user put digits it will turn to asterisk
@@ -231,15 +226,13 @@ void User::withdraw(){                                           // Function for
     }
     if(stoi(amount) > head->inf.savings){                           //if user's input amount is greater than its savings
         cout << "INSUFFICIENT SAVINGS!" << endl;                    // system will prompt insufficient savings
-        system("pause");
-        withdraw();
+        system("pause");  withdraw();
     }
     head->inf.savings = head->inf.savings - stof(amount);           // if input is lesser than saving
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Your money is safe with us" << endl;                    //user will proceed
     cout << "THANK YOU FOR WITHDRAWING AT STUDENTS BANK INC." << endl;
-    checkBal();                                                     // will display balance before exit
-    system("pause");
+    checkBal(); system("pause");                                                     // will display balance before exit
 }
 
 void User::checkBal(){                                             // Function for displaying remaining balance for savings
@@ -284,8 +277,7 @@ void User::fundTransfer(){                                         // Function f
         cout << "\e[1;1H\e[2J" << endl;
         cout << "User not found!" << endl;                         // account not found 
         cout << "The user must need to register first!" << endl;   
-        system("pause");
-        fundTransfer();                                            // will just call the function again
+        system("pause"); fundTransfer();                           // will just call the function again                        
     }
 
    
@@ -299,24 +291,20 @@ void User::fundTransfer(){                                         // Function f
         getline(cin, amount);
         if(!(regex_match(amount, numberEx))){
             cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
-            system("pause");
-            fundTransfer();
+            system("pause");  fundTransfer();
         }
         if(stof(amount) > acc.inf.savings){                                                   // will check if the input amount of user is greater than his/her savings
             cout << "INSUFFICIENT SAVINGS!" << endl;
-            system("pause");
-            fundTransfer();
+            system("pause"); fundTransfer();
         }
         if(stof(amount) > 100){
             cout << "Fund transfering must be a minimum of 100 php"<<endl;                   // fund transfering minimum of 100 pesos
             fundTransfer();
-
         }
 
         if(stof(amount) < 1){                                                                 // will check if the amount is valid/invalid
             cout << "INVALID AMOUNT!" << endl;
-            system("pause");
-            fundTransfer();
+            system("pause"); fundTransfer();
         }
 
         acc.inf.savings = acc.inf.savings - stof(amount);                                    // if true, the savings of user's account will decrease
@@ -324,9 +312,7 @@ void User::fundTransfer(){                                         // Function f
         cout << "\e[1;1H\e[2J" << endl;
         cout << "THANK YOU FOR TRUSTING STUDENT BANK INC." << endl;
         cout << "Fund transfered successfully!" << endl;                                     // fund transfer successfully
-        checkBal();                                                                          // wil display remaining balance before exit
-        system("pause");
-        return;
+        checkBal(); system("pause"); return;                                                                        // wil display remaining balance before exit
     }
 
     return;
@@ -346,8 +332,7 @@ void User::changePin(){                                          // Function for
     }
     if(sha256(oldPin) != acc.inf.pincode){                       //will check if input pin does not match to system pin
         cout << "PIN does not match" << endl; 
-        system("pause");
-        changePin();
+        system("pause"); changePin();
     }else{
         cout << "Please enter your new pin: ";                  // if true, prompt user to new pin
         cPin = asteriskPass();                           
@@ -367,8 +352,7 @@ void User::changePin(){                                          // Function for
         }else{
             acc.inf.pincode = sha256(buffer);                 // if true, then the re-enter pin will be saved
             cout << "PIN changed sucessfully!" << endl;
-            saveToAcc();
-            system("pause");
+            saveToAcc();system("pause");
         }
     }
 }
@@ -390,8 +374,7 @@ void User::accountMenu(){                                                       
     string c;
     getline(cin, c);
     if(!(regex_match(c, numberEx))){
-        cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
-        return;
+        cout << "PLEASE ENTER NUMBERS ONLY!" << endl; return;
     }
     
 
@@ -399,35 +382,26 @@ void User::accountMenu(){                                                       
     {                                // it will just go to the menu immediately
     case 1:
         if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); goto START;}
-        checkBal();
-        break;
+        checkBal(); break;
     case 2:
         if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); goto START;}
-        withdraw();
-        break;
+        withdraw();break;
     case 3:
         if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); goto START;}
-        deposit();
-        break;
+        deposit(); break;
     case 4:
         if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); goto START;}
-        fundTransfer();
-        break;
+        fundTransfer(); break;
     case 5:
         if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); goto START;}
-        changePin();
-        break;
+        changePin(); break;
     case 6:
         /* code */
         break;
     case 7:
-        save();
-        saveToAcc();
-        exit(0);
-        break;
+        save(); saveToAcc();exit(0); break;
     default:
-        cout << "Please enter numbers 1-7 only!" << endl;
-        break;
+        cout << "Please enter numbers 1-7 only!" << endl;break;
     }
 
 }
@@ -444,7 +418,6 @@ void User::menu(){                           //Function for menu of the entire s
     cout << "Please enter [1-3]: ";
 
     getline(cin, choice);
-
     
     if(!(regex_match(choice, numberEx))){
         cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
@@ -456,22 +429,13 @@ void User::menu(){                           //Function for menu of the entire s
     switch (c)
     {
     case 1: // case 1 for registration
-        cout << "REGISTRATION" << endl;
-        registerAcc();
-        system("pause");
-        break;
+        cout << "REGISTRATION" << endl; registerAcc(); system("pause"); break;
     case 2: // case 2 for signing in
-        cout << "SIGN-IN" << endl;
-        openAcc();
-        break;
+        cout << "SIGN-IN" << endl;openAcc();break;
     case 3: // case 3 for exit
-        cout << "THANK YOU FOR USING STUDENT BANK INC." << endl;
-        save();
-        exit(0);
-        break;
+        cout << "THANK YOU FOR USING STUDENT BANK INC." << endl;save();exit(0); break;
     default:
-        cout << "Please enter numbers 1-3 only!" << endl;
-        break;
+        cout << "Please enter numbers 1-3 only!" << endl;break;
     }
 
 

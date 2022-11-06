@@ -14,7 +14,7 @@ void ShowConsoleCursor(bool showFlag);
 
 int main(){
     setFontStyle(23);
-    string Menu[5] =  {"  ADD STUDENT  ", " DELETE STUDENT ", " UPDATE STUDENT ", "DISPLAY STUDENTS", "  EXIT & SAVE  "};
+    string Menu[3] =  {"  REGISTRATION  ", " SIGN-IN ", " EXIT "};
     int pointer = 0;
     const char ENTER = 13;//ASCII code for ENTER Key
     char ch = ' ';
@@ -27,7 +27,7 @@ int main(){
         gotoxy(52,8);
         cout << "MAIN MENU\n\n";
         gotoxy(35, 16);
-        cout<<"USE UP OR DOWN ARROW KEYS TO NAVIGATE THROUGH MENU";
+        cout<<"\nUSE UP OR DOWN ARROW KEYS TO NAVIGATE THROUGH MENU\n";
 
 
         for(int i=0; i<5; ++i){
