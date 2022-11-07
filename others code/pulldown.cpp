@@ -1,7 +1,6 @@
 /* CODE NI SIR FOR PULL DOWN FROM FILES*/
 
 
-#include "../header/functions.h"
 
 void SetColor(int ForgC);
 void gotoxy(int x,int y);

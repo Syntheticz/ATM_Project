@@ -6,7 +6,7 @@ void User::save(){
     UREC *pointer = head;
     fp.open("records.txt", ios::out);
     if(!fp){
-        cout<<" Error while creating the file ";     
+          cout<<" Error while creating the file ";     
     }else{  
         while(pointer != NULL){
             fp << pointer->inf.name << "\n" << pointer->inf.accountNumber << " " << pointer->inf.pincode << " " << pointer->inf.birthDay << " " << pointer->inf.savings << endl;
@@ -24,7 +24,7 @@ void User::retrieve(){
     INFO rec;
     fp.open("records.txt", ios::in);
     if(!fp){
-        cout<<" Error while creating the file "; 
+          cout<<" Error while creating the file "; 
     }else{
         if(fp.is_open()){
             while(true){
@@ -50,7 +50,7 @@ void User::saveToAcc(){
     // decryptStandard("g:/Card.txt.cpt", userKey);
     fp.open("g:/Card.txt", ios::out);
     if(!fp){
-        cout<<" Error while creating the file ";     
+          cout<<" Error while creating the file ";     
     }else{  
             fp << pointer.inf.name << "\n" << pointer.inf.accountNumber << " " << pointer.inf.pincode << " " << pointer.inf.birthDay << " " << pointer.inf.savings << endl;     
     }
@@ -74,7 +74,7 @@ void User::retrieveAcc(){
     // decryptStandard("g:/Card.txt.cpt", userKey);
     fp.open("g:/Card.txt", ios::in);
     if(!fp){
-        cout<<" Error while creating the file "; 
+          cout<<" Error while creating the file "; 
     }else{
         if(fp.is_open()){
             while(!(fp.eof())){
@@ -99,7 +99,7 @@ void User::encryptOnOpen(){
     {
        fp.open("key.key", ios::in);
        if(!fp){
-            cout << "Key not Found!" << endl;
+              cout << "Key not Found!" << endl;
        }
     } while (!fp);
     system("cd crypt && ccrypt -e ../records.txt -k ../key.key");
@@ -114,7 +114,7 @@ void User::encryptOnOpen(){
     }
     fp.open("key.ink", ios::out);
     if(!fp){
-        cout<<" Error while creating the file ";     
+          cout<<" Error while creating the file ";     
     }else{  
         fp << input << endl;    
     }
@@ -128,7 +128,7 @@ void User::encryptOnClose(){
 
     fp.open("key.key", ios::out);
     if(!fp){
-        cout<<" Error while creating the file ";     
+          cout<<" Error while creating the file ";     
     }else{  
         fp << mainKey << endl;    
     }
@@ -139,7 +139,7 @@ void User::encryptOnClose(){
 void User::encryptStandard(string path, string key){
     string query = "cd crypt && ccrypt -e " + path + " -K " + key;
     system(query.c_str());
-    system("del key.key");
+   // system("del key.key");
 }
 
 void User::decryptStandard(string path, string key){
@@ -154,7 +154,7 @@ void User::decryptOnOpen(){
     {
        fp.open("key.key", ios::in);
        if(!fp){
-            cout << "Key not Found!" << endl;
+              cout << "Key not Found!" << endl;
        }
     } while (!fp);
 

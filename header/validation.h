@@ -24,7 +24,7 @@ bool User::validate(int mode){                          //Returns True if invali
     case 1:
         //Validate if the input is a number
         if(!(regex_match(input, numberEx))){
-            cout << "\nPLEASE ENTER NUMBERS ONLY!" << endl;
+              cout << "\nPLEASE ENTER NUMBERS ONLY!" << endl;
             system("pause");
             return true;
         }
@@ -32,7 +32,7 @@ bool User::validate(int mode){                          //Returns True if invali
     case 2:
         //Validate if the input is a valid name
         if(!(regex_match(input, nameEx))){
-            cout << "INVALID NAME" << endl;
+              cout << "INVALID NAME" << endl;
             system("pause");
             return true;
         }
@@ -41,7 +41,7 @@ bool User::validate(int mode){                          //Returns True if invali
         //Validate contact number
         validate(1);
         if(input.length() != 9){
-            cout << " INVALID CONTACT NUMBER! Ex. +639123456789" << endl;
+              cout << " INVALID CONTACT NUMBER! Ex. +639123456789" << endl;
             system("pause");
             return true;
         }
@@ -49,7 +49,7 @@ bool User::validate(int mode){                          //Returns True if invali
     case 4:
         //Validate date
         if (!isValidDate(day, month, year)){
-            cout << "INVALID DATE"<<endl;
+              cout << "INVALID DATE"<<endl;
             system("pause");
             return true;
 
@@ -61,7 +61,7 @@ bool User::validate(int mode){                          //Returns True if invali
         //     return true;
         // }
         if((now->tm_year + 1900) - year < 12){
-            cout << "Anyone who's 13 below cannot use the atm!"<< endl; 
+              cout << "Anyone who's 13 below cannot use the atm!"<< endl; 
             system("pause");
             return true;
         }
@@ -70,12 +70,12 @@ bool User::validate(int mode){                          //Returns True if invali
         //Validate Pincode
         validate(1);
         if(input.length() > 6 || input.length() < 4){
-            cout << "Pincode must only be a 4 or 6 digit number!" << endl; 
+              cout << "Pincode must only be a 4 or 6 digit number!" << endl; 
             system("pause");
             return true;
             }
         if(buffer.length() > 1 && buffer != input){
-            cout << "PINCODE DOES NOT MATCH!" << endl; 
+              cout << "PINCODE DOES NOT MATCH!" << endl; 
             system("pause");
             return true;
         }
@@ -84,19 +84,19 @@ bool User::validate(int mode){                          //Returns True if invali
         //validate initial Deposit
         validate(1);
         if(stoi(input) < 5000){
-            cout << "Initial deposit must be a minimum of 5,000php!" << endl;
+              cout << "Initial deposit must be a minimum of 5,000php!" << endl;
             system("pause");
             return true;
            
         }
         if (stoi(input) > 100000){
-            cout<<"Maximum deposit amount must only be 100,000php"<<endl;
+              cout<<"Maximum deposit amount must only be 100,000php"<<endl;
             system("pause");
             return true;
          
         }
         if(stof(input) == 0){
-            cout << "Please enter a valid amount!" << endl;
+              cout << "Please enter a valid amount!" << endl;
             system("pause");
             return true;
            
@@ -126,14 +126,14 @@ bool User::validatePin(){                   //Returns true if invalid
         
        system("pause");
     }else{
-        cout << "key is missing!" << endl;
+          cout << "key is missing!" << endl;
         
         return true;                        
     }   
     fp.close();
     
     if(sha256(input) != buffer){
-        cout << "This is a test: " << buffer << " and " << sha256(input) << endl;
+          cout << "This is a test: " << buffer << " and " << sha256(input) << endl;
         system("pause");
         return true;
     }
