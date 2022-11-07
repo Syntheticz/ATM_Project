@@ -1,5 +1,11 @@
 #include "dataStructure.h"
 
+//PATHS
+//Replace the letter of the drive to customize patg of the Card
+const string CARD_PATH = "g:/Card.txt";
+const string CARD_PATH_ENCRYPTION = "g:/Card.txt.cpt";
+const string KEY_CODE_PATH = "g:/pincode.code";
+
 void User::save(){
     decryptStandard("../records.txt.cpt", mainKey);
     fstream fp;
@@ -9,8 +15,13 @@ void User::save(){
           cout<<" Error while creating the file ";     
     }else{  
         while(pointer != NULL){
-            fp << pointer->inf.name << "\n" << pointer->inf.accountNumber << " " << pointer->inf.pincode << " " << pointer->inf.birthDay << " " << pointer->inf.savings << endl;
-            pointer = pointer->next;
+            if(pointer->next == NULL){
+                fp << pointer->inf.name << "\n" << pointer->inf.accountNumber << " " << pointer->inf.pincode << " " << pointer->inf.birthDay << " " << pointer->inf.savings << "\n" << endl;
+                pointer = pointer->next;
+            }else{
+                fp << pointer->inf.name << "\n" << pointer->inf.accountNumber << " " << pointer->inf.pincode << " " << pointer->inf.birthDay << " " << pointer->inf.savings << endl;
+                pointer = pointer->next;
+            }
         }
         fp.close();
             }
@@ -19,24 +30,24 @@ void User::save(){
 
 
 void User::retrieve(){
-    decryptOnOpen();
+    decryptOnOpen();                                    //Decrypt the database file First
     fstream fp;
-    INFO rec;
+    UREC *rec = new UREC;
     fp.open("records.txt", ios::in);
     if(!fp){
           cout<<" Error while creating the file "; 
     }else{
         if(fp.is_open()){
-            while(true){
-                getline(fp, rec.name, '\n');
-                fp >> rec.accountNumber >> rec.pincode >> rec.birthDay >> rec.savings;
+            while(true){         
+                getline(fp, rec->inf.name, '\n');
+                fp >> rec->inf.accountNumber >> rec->inf.pincode >> rec->inf.birthDay >> rec->inf.savings;
                 fp.ignore();
                 if(!fp.eof()){
-                    add(rec);
-                }else{
+                  add(rec);  
+                }
+                else{
                     break;
-                }       
-
+                }
             }
             fp.close();
             encryptStandard("../records.txt", mainKey);
@@ -45,47 +56,56 @@ void User::retrieve(){
 }
 
 void User::saveToAcc(){
-    fstream fp;
+    fstream fp, fs;
     UREC pointer = acc;
-    // decryptStandard("g:/Card.txt.cpt", userKey);
-    fp.open("g:/Card.txt", ios::out);
+    decryptStandard(CARD_PATH_ENCRYPTION, userKey);
+    fp.open(CARD_PATH, ios::out);
     if(!fp){
           cout<<" Error while creating the file ";     
     }else{  
             fp << pointer.inf.name << "\n" << pointer.inf.accountNumber << " " << pointer.inf.pincode << " " << pointer.inf.birthDay << " " << pointer.inf.savings << endl;     
     }
-    fp.clear();
     fp.close();
 
-
-    fp.open("g:/pincode.code", ios::out);
-    if(fp.is_open()){
-       fp << pointer.inf.pincode;
+    string buff = pointer.inf.pincode;
+    fs.open(KEY_CODE_PATH, ios::out);
+    if(fs.is_open()){
+       fs << buff;
     }
-    fp.close();
-    // encryptStandard("g:/Card.txt", userKey);
+    fs.close();
+    encryptStandard(CARD_PATH, userKey);
 }
 
+void User::displayList(){
+    UREC *p = head;
+    while (p!=NULL)
+    {
+       cout << p->inf.name << " " << p->inf.accountNumber << endl;
+       p = p->next;
+    }
+}
+
+void User::displayAcc(){
+    cout << acc.inf.name << " " << acc.inf.accountNumber << " " << acc.inf.pincode << endl;
+    system("pause");
+}
 
 
 void User::retrieveAcc(){
     fstream fp;
-    //change path to removable storage
-    // decryptStandard("g:/Card.txt.cpt", userKey);
-    fp.open("g:/Card.txt", ios::in);
+    decryptStandard(CARD_PATH_ENCRYPTION, userKey);
+    
+    fp.open(CARD_PATH, ios::in);
     if(!fp){
           cout<<" Error while creating the file "; 
     }else{
         if(fp.is_open()){
-            while(!(fp.eof())){
                 getline(fp, acc.inf.name, '\n');
                 fp >> acc.inf.accountNumber >> acc.inf.pincode >> acc.inf.birthDay >> acc.inf.savings;
                 fp.ignore();
-            }
-            fp.close();
-        }
+        }fp.close();
     }
-    // encryptStandard("g:/Card.txt", userKey);
+    encryptStandard(CARD_PATH, userKey);
 }
 
 
@@ -125,7 +145,6 @@ void User::encryptOnClose(){
     fstream fp;
     string query = "cd crypt && ccrypt -e ../records.txt -K " + mainKey;
     system(query.c_str());
-
     fp.open("key.key", ios::out);
     if(!fp){
           cout<<" Error while creating the file ";     
@@ -133,8 +152,6 @@ void User::encryptOnClose(){
         fp << mainKey << endl;    
     }
 }
-
-
 
 void User::encryptStandard(string path, string key){
     string query = "cd crypt && ccrypt -e " + path + " -K " + key;
@@ -162,7 +179,6 @@ void User::decryptOnOpen(){
         fp >> mainKey;
         fp.ignore();
     }
-
     fp.close();
     system("cd crypt && ccrypt -d ../records.txt.cpt -k ../key.key");
     

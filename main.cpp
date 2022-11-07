@@ -8,7 +8,7 @@
 #include <fstream>
 
 #include "sha256.h"
-#include "header/functions.h"
+#include "header/display.h"
 
 
 int main(){
@@ -22,5 +22,4 @@ int main(){
 
 }
   
-
 

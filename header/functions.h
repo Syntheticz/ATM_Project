@@ -1,10 +1,13 @@
+#include "validation.h"
 
 
-#include "validation.h" /// expression
 
-void RECEIPT::setTime(){                                                  ////Function to set real-time in receipt of user
-    time_t now = time(0);
-    Date = ctime(&now);
+
+
+tm* User::setTime(){                                                  ////Function to set real-time in receipt of user
+    time_t t = time(0);
+    tm* time = localtime(&t);
+    return time;
 }
 
 string get_uuid() {                                                      //will generate a unique transaction number
@@ -32,12 +35,12 @@ UREC* User::locate(int accountNumber){                         // will locate ac
 }
 
 
-void User::add(INFO inf){                                      // function for users if they want to register/open atm
-    UREC *pointer, *follower, *temp;
+void User::add(UREC *temp){                                      // function for users if they want to register/open atm
+    UREC *pointer, *follower, *t;
     pointer = follower = head;
 
-    temp = new UREC;
-    temp->inf = inf; 
+    t = new UREC;
+    t->inf = temp->inf;
 
     while (pointer != NULL)
     {
@@ -46,10 +49,10 @@ void User::add(INFO inf){                                      // function for u
     }
 
     if(head == pointer){
-        head = temp;
+        head = t;
     }else{
-        follower->next = temp;
-        temp->next = pointer;
+        follower->next = t;
+        t->next = pointer;
     }
 
 }
@@ -68,7 +71,7 @@ void User::registerAcc(){                                    // Function for reg
         system("pause"); return;                                     
     }
 
-    INFO usr;
+    UREC *usr = new UREC;
 
     time_t t = time(0);                                      // setting real-time
     tm* now = localtime(&t);
@@ -77,7 +80,7 @@ void User::registerAcc(){                                    // Function for reg
       cout << "Please enter your name: ";                     // gets user's name
     getline(cin, input);
     if(validate(2)){registerAcc();}                                         // will validate if user's passed name validation
-    usr.name = input;
+    usr->inf.name = input;
     system("cls");
 
     
@@ -85,8 +88,8 @@ void User::registerAcc(){                                    // Function for reg
       cout << "Please enter your phone number: +639";          // gets user's contact number
     getline(cin, input); 
     if(validate(3)){registerAcc();}                          // will validate user's contact number but actually only counts if digits<10
-    usr.contact.append("+639");
-    usr.contact.append(input);
+    usr->inf.contact.append("+639");
+    usr->inf.contact.append(input);
 
     buffer = "";
       cout << "Please enter your birthday\nMonth [1-12] [MM]:  ";    //gets user's birthdate 
@@ -101,14 +104,14 @@ void User::registerAcc(){                                    // Function for reg
     if(validate(1)){registerAcc();}                                // will validate if input is correct
     buffer.append(input + "/");
 
-    //TODO fix age restrictions
-      cout << "Year Ex. 2001 [YYYY]: ";                               //gets user's birthyear
+
+    cout << "Year Ex. 2001 [YYYY]: ";                               //gets user's birthyear
     getline(cin, input);
     if(validate(1)){registerAcc();}                                // will validate if input is correct
     year = stoi(input);
     buffer.append(input);
     if(validate(4)){registerAcc();}
-    usr.birthDay = buffer;
+    usr->inf.birthDay = buffer;
     buffer = "";
 
 
@@ -120,28 +123,37 @@ void User::registerAcc(){                                    // Function for reg
     buffer = asteriskPass();
     if(validate(5)){registerAcc();}
     userKey = input;
-    usr.pincode = sha256(input);                                        //pincode will compare to buffer then save to system
+    usr->inf.pincode = sha256(input);
 
     cout << "\nPlease enter initial deposit: ";                        // asks how much user want to deposit
     getline(cin, input);
-    if(validate(6)){registerAcc();}                                   //minimum 5,000 maximum 100,000
-    usr.savings = stoi(input);                                        //store deposit
+    if(validate(6)){registerAcc();}
+    usr->inf.savings = stoi(input);
 
     // confirmation notice
-      cout << "\e[1;1H\e[2J" << endl;
-      cout << "\nPlease confirm your information!" << endl;                // Function for confirmation
-      cout << "Name: " << usr.name << endl;                                // will list all user's detail
-      cout << "Number: " << usr.contact << endl;
-      cout << "birthday: " << usr.birthDay << endl;
-      cout << "initial Deposit: " << usr.savings << endl;
-      cout << "\n\nType [Y] if all of the information are correct.\nType [N] if you want to re-enter our information: ";
+
+    cout << "\e[1;1H\e[2J" << endl;
+    cout << "\nPlease confirm your information!" << endl;
+    cout << "Name: " << usr->inf.name << endl;
+    cout << "Number: " << usr->inf.contact << endl;
+    cout << "birthday: " << usr->inf.birthDay << endl;
+    cout << "initial Deposit: " << usr->inf.savings << endl;
+    cout << "\n\nType [Y] if all of the information are correct.\nType [N] if you want to re-enter our information: ";
+
     getline(cin, input);
     if(input == "Y" || input == "y"){
 
+        buffer = "";
         buffer = get_uuid(); 
-          cout << "Your unique id is: " << buffer << endl; 
-        usr.accountNumber = stoi(buffer);
-        add(usr); acc.inf = usr; saveToAcc();      // if user confirms, all details will save                                   
+
+        int uuid = stoi(buffer);
+        cout << "Your unique id is: " << uuid << endl; 
+        usr->inf.accountNumber = uuid;
+        add(usr);
+        acc.inf = usr->inf;
+        saveToAcc();
+        save();
+
     }
 }
 
@@ -195,130 +207,152 @@ void User::openAcc(){   //Function for user putting usb drive
                 fp << acc.inf.pincode;
             }
         }
-        fp.close();
-    }
-    fp.close();
-
-
+    fp.seekg(0, ios::end);
+    if(fp.tellg() == 0){
     cout << "\e[1;1H\e[2J" << endl;
-      cout << "Card detected..." << endl;                            // card detecting 
-    if(!(checkPin())){  cout << "Wrong Pin!" << endl; system("pause");goto START;}  //if pin does not match it will just loop
 
-    accountMenu();                                                  // if pin matched, it will proceed to account menu
+    cout << "Card detected..." << endl;
+
+    checkPin();
+
+
+    while(1){
+        accountMenu();
+    }
 }
 
-bool User::checkPin(){                                             // Function checking pin before you access your private details
-     cout << "Please enter your PIN: ";                             // will ask user for their pin
-    input = asteriskPass();                                        // asterisk password
-    if(validatePin()){  cout << "Wrong Pin!" << endl; return false;} // will return false if pin is unmatched
-    userKey = input;                                               // will compare the system pin to the input made by user
+
+void User::checkPin(){
+    START:
+    cout << "Please enter your PIN: ";
+    input = asteriskPass();
+    if(validate(1)){cout << "Please enter a valid PIN!" << endl; system("pause"); goto START;}
+    if(validatePin()){cout << "\e[1;1H\e[2J" << endl; cout << "\nWrong Pin!" << endl; system("pause"); goto START;}
+    userKey = input;
     retrieveAcc();
-    if(sha256(input) == acc.inf.pincode){                          // and when pin matched
-          cout << "PIN MATCHED!" << endl;
-        return true;                                               //will return true
-    }
-    return false;                                                // if not will return false
+  
 }
 
 void User::withdraw(){                                           // Function for withdrawal
-    string amount;                                               // variable for user's amount input
-      cout << "Remaining Balance: " << head->inf.savings << endl;    //display remaining balance
-      cout << "How much do you want to withdraw [1-" << head->inf.savings << "]: ";  //asking user for amount of withdrawal
-    getline(cin, amount);
 
-    if(!(regex_match(amount, numberEx))){
-          cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
+    decryptStandard(CARD_PATH_ENCRYPTION, userKey);                                             // variable for user's amount input
+    cout << "Remaining Balance: " << acc.inf.savings << endl;    //display remaining balance
+    cout << "How much do you want to withdraw [1-" << acc.inf.savings << "]: ";  //asking user for amount of withdrawal
+    getline(cin, input);
+
+    if(validate(1))
+        return;
+        
+    if(stoi(input) > acc.inf.savings){                           //if user's input amount is greater than its savings
+        cout << "INSUFFICIENT SAVINGS!" << endl;                    // system will prompt insufficient savings
+        system("pause");
         withdraw();
     }
-    if(stoi(amount) > head->inf.savings){                           //if user's input amount is greater than its savings
-          cout << "INSUFFICIENT SAVINGS!" << endl;                    // system will prompt insufficient savings
-        system("pause");  withdraw();
-    }
-    head->inf.savings = head->inf.savings - stof(amount);           // if input is lesser than saving
+    acc.inf.savings = acc.inf.savings - stof(input);           // if input is lesser than saving
+    UREC *pointer = locate(acc.inf.accountNumber);
+    pointer->inf.savings = acc.inf.savings;
     cout << "\e[1;1H\e[2J" << endl;
-      cout << "Your money is safe with us" << endl;                    //user will proceed
-      cout << "THANK YOU FOR WITHDRAWING AT STUDENTS BANK INC." << endl;
-    checkBal(); system("pause");                                                     // will display balance before exit
-}
-
-void User::checkBal(){                                             // Function for displaying remaining balance for savings
-      cout <<"Hi!, "<< acc.inf.name << endl;
-      cout << " \nCURRENT BALANCE: " << acc.inf.savings << endl;
+    cout << "Your money is safe with us" << endl;                    //user will proceed
+    cout << "THANK YOU FOR WITHDRAWING AT STUDENTS BANK INC." << endl;
+    save();
+    saveToAcc();
+    withdrawReceipt();                                                     // will display balance before exit
     system("pause");
 }
 
-void User::deposit(){                                              //Function for money deposit
-    string amount;                                                 // variable for user's amount input
+void User::checkBal(){                                             // Function for displaying remaining balance for savings
+    retrieveAcc();
+    cout <<"\nHi!, "<< acc.inf.name << endl;
+    cout << " \nCURRENT BALANCE: " << acc.inf.savings << endl;
+    system("pause");
+}
+
+void User::deposit(){                                              //Function for money deposit                                               // variable for user's amount input
     cout << "\e[1;1H\e[2J" << endl;
-      cout << "Please enter the amount you want to deposit: ";       // will ask user for amount of deposit
-    getline(cin, amount);
-    if(!(regex_match(amount, numberEx))){
-          cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
-        deposit();
-    }
-    head->inf.savings = head->inf.savings + stof(amount);          // If money in savings will add up
-      cout << "DEPOSIT SUCCESSFUL!" << endl;                         // User can proceed
-    checkBal();                                                    // will display remaining balance before exit
+    cout << "Please enter the amount you want to deposit: ";       // will ask user for amount of deposit
+    getline(cin, input);
+    if(validate(1))
+        return;
+    acc.inf.savings = acc.inf.savings + stof(input);               // If money in savings will add up
+    UREC *pointer = locate(acc.inf.accountNumber);
+    pointer->inf.savings = acc.inf.savings;
+    cout << "DEPOSIT SUCCESSFUL!" << endl;                         // User can proceed
+    save();
+    saveToAcc();                                                  
+    depositReceipt();                                               // will display remaining balance before exit
+    system("pause");
 }
 
 
 
 void User::fundTransfer(){                                         // Function for fund transfer, user is sender
-                                           
-    string amount, accountNum, c;                                  // variables used
+    FUND:                                   
+    retrieveAcc();
     cout << "\e[1;1H\e[2J" << endl;
-     cout << "Please enter the recipient's account number: ";       // will ask user for the recipients' account number
-    getline(cin, accountNum);
-    if(!(regex_match(accountNum, numberEx))){
-          cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
-        fundTransfer();
-    }
-    if(stoi(accountNum) == acc.inf.accountNumber ){                // Just to make sure user won't send money to itself
-          cout << "You can't send money to yourself" << endl;
-        fundTransfer();
+    cout << "Please enter the recipient's account number: ";       // will ask user for the recipients' account number
+    getline(cin, input);
+    if(validate(1))
+        goto FUND;
+    if(stoi(input) == acc.inf.accountNumber ){                // Just to make sure user won't send money to itself
+        cout << "You can't send money to yourself" << endl;
+        goto FUND;
     }
 
-    UREC *point = locate(stoi(accountNum));                        // will locate the account number that user input
+    UREC *point = locate(stoi(input));                        // will locate the account number that user input
     if(point == NULL){                                             // if null
         cout << "\e[1;1H\e[2J" << endl;
-          cout << "User not found!" << endl;                         // account not found 
-          cout << "The user must need to register first!" << endl;   
-        system("pause"); fundTransfer();                           // will just call the function again                        
+        cout << "User not found!" << endl;                         // account not found 
+        cout << "The user must need to register first!" << endl;   
+        system("pause");
+        goto FUND;                                          // will just call the function again
     }
 
-   
+    FUNDT:
     cout << "\e[1;1H\e[2J" << endl;
-      cout << "You are transfering funds to an individual named: " << point->inf.name << endl;  //displays recipient's name
-      cout << "With and account number of " << point->inf.accountNumber << endl;                //displays recipient's account number
-      cout << "Do you still want to continue? [Y] yes or [N] no: ";
-    getline(cin, c);
-    if(c == "y" || c == "Y"){
-          cout << "Please enter the amount you want to transfer [1-" << acc.inf.savings << "]: ";  // displays user's savings
-        getline(cin, amount);
-        if(!(regex_match(amount, numberEx))){
-              cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
-            system("pause");  fundTransfer();
+    cout << "You are transfering funds to an individual named: " << point->inf.name << endl;  //displays recipient's name
+    cout << "With and account number of " << point->inf.accountNumber << endl;                //displays recipient's account number
+    cout << "Do you still want to continue? [Y] yes or [N] no: ";
+    getline(cin, buffer);
+
+    if(validate(1)){
+        goto FUNDT;
+    }
+    if(buffer == "y" || buffer == "Y"){
+        FUNDA:
+        cout << "Please enter the amount you want to transfer [1-" << acc.inf.savings << "]: ";  // displays user's savings
+        getline(cin, input);
+        if(validate(1)){
+            goto FUNDA;
         }
-        if(stof(amount) > acc.inf.savings){                                                   // will check if the input amount of user is greater than his/her savings
-              cout << "INSUFFICIENT SAVINGS!" << endl;
-            system("pause"); fundTransfer();
+        if(stof(input) > acc.inf.savings){                                                   // will check if the input amount of user is greater than his/her savings
+            cout << "INSUFFICIENT SAVINGS!" << endl;
+            system("pause");
+            goto FUNDA;
         }
-        if(stof(amount) > 100){
-              cout << "Fund transfering must be a minimum of 100 php"<<endl;                   // fund transfering minimum of 100 pesos
-            fundTransfer();
+        if(stof(input) < 100){
+            cout << "Fund transfering must be a minimum of 100 php"<<endl;                   // fund transfering minimum of 100 pesos
+            goto FUNDA;
         }
 
-        if(stof(amount) < 1){                                                                 // will check if the amount is valid/invalid
-              cout << "INVALID AMOUNT!" << endl;
-            system("pause"); fundTransfer();
+        if(stof(input) < 1){                                                                 // will check if the amount is valid/invalid
+            cout << "INVALID AMOUNT!" << endl;
+            system("pause");
+            goto FUNDA;
         }
 
-        acc.inf.savings = acc.inf.savings - stof(amount);                                    // if true, the savings of user's account will decrease
-        point->inf.savings = point->inf.savings + stof(amount);                              // the recipient's savings account will increase
+        acc.inf.savings = acc.inf.savings - stof(input);                                    // if true, the savings of user's account will decrease
+        UREC *p = locate(acc.inf.accountNumber);
+        p->inf.savings = acc.inf.savings;
+        point->inf.savings = point->inf.savings + stof(input);                              // the recipient's savings account will increase
         cout << "\e[1;1H\e[2J" << endl;
-          cout << "THANK YOU FOR TRUSTING STUDENT BANK INC." << endl;
-          cout << "Fund transfered successfully!" << endl;                                     // fund transfer successfully
-        checkBal(); system("pause"); return;                                                                        // wil display remaining balance before exit
+        cout << "THANK YOU FOR TRUSTING STUDENT BANK INC." << endl;
+        cout << "Fund transfered successfully!" << endl;
+        decryptStandard("../records.txt.cpt", mainKey);
+        save();
+        saveToAcc();                                    // fund transfer successfully
+        fundTransferReceipt(point);                                                                          // wil display remaining balance before exit
+        system("pause");
+        return;
     }
 
     return;
@@ -327,51 +361,57 @@ void User::fundTransfer(){                                         // Function f
 }
 
 void User::changePin(){                                          // Function for changing pin
-    string oldPin, buffer, cPin;                                 // variables used
+    CPIN:                           // variables used
     cout << "\e[1;1H\e[2J" << endl;
-           cout<<" _____  _   _   ___   _   _ _____  _____  ______ _____ _   _ "<<endl;
-           cout<<" /  __ \\| | | | / _ \\ |\\ | |  __ \\|  ___| | ___ \\_   _| \\ | |"<<endl;
-           cout<<" | /  \\/| |_| |/ /_\\ \\|  \\| | |  \\/| |__   | |_/ / | | |  \\| |"<<endl;
-           cout<<" | |    |  _  ||  _  || . ` | | __ |  __|  |  __/  | | | . ` |"<<endl;
-           cout<<"| \\__/\\| | | || | | || |\\  | |_\\ \\| |___  | |    _| |_| |\\  |"<<endl;
-           cout<<"  \\____/\\_| |_/\\_| |_/\\_| \\_/\\____/\\____/  \\_|    \\___/\\_|\\_/"<<endl;
-                                                             
-      cout << "Please enter your current pin: ";                   // asks for user's old pin
-    oldPin = asteriskPass();                                     // asterisk password
-    if(!(regex_match(oldPin, numberEx))){
-          cout << "PLEASE ENTER NUMBERS ONLY!" << endl;       
-        changePin();
+    cout << "Change Pin..." << endl;
+    cout << "Please enter your current pin: ";                   // asks for user's old pin
+    input = asteriskPass();                                     // asterisk password
+    if(validate(1)){
+        goto CPIN;
     }
-    if(sha256(oldPin) != acc.inf.pincode){                       //will check if input pin does not match to system pin
-          cout << "PIN does not match" << endl; 
-        system("pause"); changePin();
+    if(sha256(input) != acc.inf.pincode){                       //will check if input pin does not match to system pin
+        cout << "PIN does not match" << endl; 
+        system("pause");
+        goto CPIN;
     }else{
-          cout << "Please enter your new pin: ";                  // if true, prompt user to new pin
-        cPin = asteriskPass();                           
-        if(!(cPin.length() == 6 || cPin.length() == 4)){       // new pin must be 4 or 6-digit
-              cout << "Pincode must only be a 4 or 6 digit number!" << endl; 
-            changePin();
+        cout << "Please enter your new pin: ";                  // if true, prompt user to new pin
+        buffer = asteriskPass();                           
+        if(!(buffer.length() == 6 || buffer.length() == 4)){       // new pin must be 4 or 6-digit
+            cout << "Pincode must only be a 4 or 6 digit number!" << endl; 
+            goto CPIN;
         }
-        if(sha256(oldPin)==cPin){                              // will check if user puts old pin 
-              cout <<"Please don't use your old pin"<<endl;      // user can't use its old pin
+        if(sha256(input)==buffer){                              // will check if user puts old pin 
+            cout <<"Please don't use your old pin"<<endl;      // user can't use its old pin
             system("pause");
+            goto CPIN;
         }
-          cout << "Please re-enter in your new pin: ";          // if true, user can re-enter its new pin
-        buffer = asteriskPass();
-        if(buffer != cPin){                                   // will check if the new pin and reenter new pin does not match
-              cout << "PIN does not match" << endl;
+        cout << "Please re-enter in your new pin: ";          // if true, user can re-enter its new pin
+        input = asteriskPass();
+        if(buffer != input){                                   // will check if the new pin and reenter new pin does not match
+            cout << "PIN does not match" << endl;
             system("pause");
         }else{
-            acc.inf.pincode = sha256(buffer);                 // if true, then the re-enter pin will be saved
-              cout << "PIN changed sucessfully!" << endl;
-            saveToAcc();system("pause");
+
+            acc.inf.pincode = sha256(buffer);   // if true, then the re-enter pin will be saved
+            decryptStandard(CARD_PATH_ENCRYPTION, userKey);
+            encryptStandard(CARD_PATH, buffer);
+            userKey = buffer;
+            UREC *p = locate(acc.inf.accountNumber);
+            p->inf.pincode = acc.inf.pincode;
+            cout << "PIN changed sucessfully!" << endl;
+            buffer = "";
+            save();
+            saveToAcc();
+            
         }
     }
 }
 
 
-void User::accountMenu(){                                                            // Function of the system once the user is already registered
-   if(!(checkPin())){  cout << "WRONG PIN!" << endl; system("pause"); accountMenu();} // will ask user for pin before proceed, if unmatched it will just loop
+void User::accountMenu(){
+    cout << "\e[1;1H\e[2J" << endl;
+    cout << "Welcome to Student Banks Inc." << endl;
+
     
     setFontStyle(40);
     string Menu[7] =  {"  BALANCE INQUIRY  ", " WITHDRAW ", " DEPOSIT ", " FUND TRANSFER ", " CHANGE PIN ", " MORE TRANSACTIONS ", " EXIT "};
@@ -489,6 +529,7 @@ void SetColor(int ForgC){
   HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
   CONSOLE_SCREEN_BUFFER_INFO csbi;
 
+
                        //We use csbi for the wAttributes word.
  if(GetConsoleScreenBufferInfo(hStdOut, &csbi))
  {
@@ -521,7 +562,6 @@ void ShowConsoleCursor(bool showFlag)
     cursorInfo.bVisible = showFlag; // set the cursor visibility
     SetConsoleCursorInfo(out, &cursorInfo);
 }
-
 
 
 

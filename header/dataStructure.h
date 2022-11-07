@@ -20,16 +20,18 @@ regex nameEx("^[a-zA-Z\\s]*$");                           //will check if user p
 const int MAX_VALID_YR = 9999;                             // Returns true if
 const int MIN_VALID_YR = 1800;                             // given year is valid.
 
+
 void SetColor(int ForgC);
 void gotoxy(int x,int y);
 void setFontStyle(int FontSize);
 void ShowConsoleCursor(bool showFlag);
 
+
 typedef struct receipt{                                  // structure for user's receipt (resibo)
     string Date;
     float cashIn, cashOut;
 
-    void setTime();
+
 }RECEIPT;                                                // name of struct for receipt
 
 typedef struct list{                                   
@@ -73,12 +75,12 @@ class User{
     void menu();
     void openAcc();
     void registerAcc();
-    void add(INFO inf);
+    void add(UREC *temp);
     string asteriskPass();
     void test();
     
     //for Oppended Accounts
-    bool checkPin();
+    void checkPin();
     void checkBal();
     void withdraw();
     void deposit();
@@ -109,6 +111,16 @@ class User{
     UREC* locate(int accountNumber);
     void accountMenu();
     // TODO Add features.    
+    //Recipt
+    void reciptAdd();
+    void withdrawReceipt();
+    void depositReceipt();
+    void fundTransferReceipt(UREC *point);    
+    tm* setTime();
+
+    //Debug
+    void displayList();
+    void displayAcc();
 };
 
 void User::setHead(){
