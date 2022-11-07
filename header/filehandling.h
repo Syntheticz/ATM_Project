@@ -3,7 +3,7 @@
 //PATHS
 //Replace the letter of the drive to customize patg of the Card
 const string CARD_PATH = "g:/Card.txt";
-const string CARD_PATH_ENCRYPTION = "g:/Card.txt";
+const string CARD_PATH_ENCRYPTION = "g:/Card.txt.cpt";
 const string KEY_CODE_PATH = "g:/pincode.code";
 
 void User::save(){
@@ -72,6 +72,7 @@ void User::saveToAcc(){
     fp.open(KEY_CODE_PATH, ios::out);
     if(fp.is_open()){
        fp << pointer.inf.pincode;
+       system("pause");
     }
     fp.close();
     encryptStandard(CARD_PATH, userKey);
