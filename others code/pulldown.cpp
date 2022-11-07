@@ -1,11 +1,7 @@
 /* CODE NI SIR FOR PULL DOWN FROM FILES*/
 
 
-
-#include <iostream>
-#include <windows.h>
-#include <conio.h>
-using namespace std;
+#include "../header/functions.h"
 
 void SetColor(int ForgC);
 void gotoxy(int x,int y);
@@ -13,7 +9,7 @@ void setFontStyle(int FontSize);
 void ShowConsoleCursor(bool showFlag);
 
 int main(){
-    setFontStyle(23);
+    setFontStyle(40);
     string Menu[3] =  {"  REGISTRATION  ", " SIGN-IN ", " EXIT "};
     int pointer = 0;
     const char ENTER = 13;//ASCII code for ENTER Key
@@ -30,7 +26,7 @@ int main(){
         cout<<"\nUSE UP OR DOWN ARROW KEYS TO NAVIGATE THROUGH MENU\n";
 
 
-        for(int i=0; i<5; ++i){
+        for(int i=0; i<3; ++i){
             //This will highlight the choice in the menu
             if(i==pointer){
                 gotoxy(48,10+i);
@@ -48,12 +44,12 @@ int main(){
             if(GetAsyncKeyState(VK_UP) != 0){
                 --pointer;
                 if(pointer == -1){
-                    pointer = 4;
+                    pointer = 3;
                 }
                 break;
             }else if(GetAsyncKeyState(VK_DOWN) != 0){
                 ++pointer;
-                if(pointer == 5){
+                if(pointer == 3){
                     pointer = 0;
                 }
                 break;
@@ -62,45 +58,45 @@ int main(){
                     case 0:
                     {
                         ShowConsoleCursor(true);
-                        //userAddStudent();
-                        cout <<" Add Student Record\n";
+                        retrieveAcc();
+                        cout <<" REGISTRATION\n";
                         system("pause");
                         break;
                     }
                     case 1:
                     {
+                        
                         ShowConsoleCursor(true);
-                        //userDeleteStudent();
-                        cout <<" Delete Student Record\n";
+                        openAcc();
+                        cout <<"SIGN-IN\n";
                         system("pause");
                         break;
                     }
                     case 2:
                     {
                         ShowConsoleCursor(true);
-                        //userUpdateStudent();
-                        cout <<" Add Student Record\n";
-                        system("pause");
-                        break;
-                    }
-                    case 3:
-                    {
-                        ShowConsoleCursor(true);
-                        //userDisplayStudents();
-                        cout <<" Add Student Record\n";
-                        system("pause");
-                        break;
-
-                    }
-                    case 4:
-                    {
-                        ShowConsoleCursor(false);
-                        //STUDENTS.saveRecords();
-                        //exitMessage();
-                        cout <<" Return home\n";
+                        cout <<"THANK YOU FOR USING STUDENT BANK INC.\n";
                         system("pause");
                         exit(0);
                     }
+                    // case 3:
+                    // {
+                    //     ShowConsoleCursor(true);
+                    //     //userDisplayStudents();
+                    //     cout <<" Add Student Record\n";
+                    //     system("pause");
+                    //     break;
+
+                    // }
+                    // case 4:
+                    // {
+                    //     ShowConsoleCursor(false);
+                    //     //STUDENTS.saveRecords();
+                    //     //exitMessage();
+                    //     cout <<" Return home\n";
+                    //     system("pause");
+                    //     exit(0);
+                    // }
                 }
                 break;
             }
@@ -139,7 +135,7 @@ void setFontStyle(int FontSize){
     cfi.dwFontSize.Y = FontSize;                  // Height
     cfi.FontFamily = FF_DONTCARE;
     cfi.FontWeight = FW_NORMAL;
-    std::wcscpy(cfi.FaceName, L"Consolas"); // font style
+    std::wcscpy(cfi.FaceName, L"Times New Roman"); // font style
     SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
 }
 

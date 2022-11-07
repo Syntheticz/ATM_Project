@@ -3,7 +3,7 @@
 #include <random>
 #include <regex>
 #include <conio.h>
-//#include <windows.h>
+#include <windows.h>
 #include <string>
 #include <ctime>
 #include <time.h>
@@ -19,6 +19,11 @@ regex nameEx("^[a-zA-Z\\s]*$");                           //will check if user p
 
 const int MAX_VALID_YR = 9999;                             // Returns true if
 const int MIN_VALID_YR = 1800;                             // given year is valid.
+
+void SetColor(int ForgC);
+void gotoxy(int x,int y);
+void setFontStyle(int FontSize);
+void ShowConsoleCursor(bool showFlag);
 
 typedef struct receipt{                                  // structure for user's receipt (resibo)
     string Date;

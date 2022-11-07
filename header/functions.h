@@ -359,85 +359,268 @@ void User::changePin(){                                          // Function for
 
 
 void User::accountMenu(){                                                            // Function of the system once the user is already registered
-    if(!(checkPin())){cout << "WRONG PIN!" << endl; system("pause"); accountMenu();} // will ask user for pin before proceed, if unmatched it will just loop
-    START:
-    cout << "\e[1;1H\e[2J" << endl;
-    cout << "Welcome to Student Banks Inc." << endl;
-    cout << "[1] Balance Inquiry" << endl;
-    cout << "[2] Withdraw" << endl;
-    cout << "[3] Deposit" << endl;
-    cout << "[4] Fund Transfer" << endl;
-    cout << "[5] Change PIN code" << endl;
-    cout << "[6] More options..." << endl;
-    cout << "[7] Exit" << endl;
-    cout << "Please numbers [1-7] only!: ";
-    string c;
-    getline(cin, c);
-    if(!(regex_match(c, numberEx))){
-        cout << "PLEASE ENTER NUMBERS ONLY!" << endl; return;
-    }
+   if(!(checkPin())){cout << "WRONG PIN!" << endl; system("pause"); accountMenu();} // will ask user for pin before proceed, if unmatched it will just loop
     
+    setFontStyle(40);
+    string Menu[7] =  {"  BALANCE INQUIRY  ", " WITHDRAW ", " DEPOSIT ", " FUND TRANSFER ", " CHANGE PIN ", " MORE TRANSACTIONS ", " EXIT "};
+    int pointer = 0;
+    const char ENTER = 13;//ASCII code for ENTER Key
+    char ch = ' ';
+    HANDLE  hConsole;
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    while(true){
+        system("cls");
+        ShowConsoleCursor(false);
 
-    switch (stoi(c))                 //Every choices needs to put pin first, if pin does not match, user doesn't need to put pin from the start
-    {                                // it will just go to the menu immediately
-    case 1:
-        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); goto START;}
-        checkBal(); break;
-    case 2:
-        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); goto START;}
-        withdraw();break;
-    case 3:
-        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); goto START;}
-        deposit(); break;
-    case 4:
-        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); goto START;}
-        fundTransfer(); break;
-    case 5:
-        if(!(checkPin())){cout << "Wrong Pin!" << endl; system("pause"); goto START;}
-        changePin(); break;
-    case 6:
-        /* code */
-        break;
-    case 7:
-        save(); saveToAcc();exit(0); break;
-    default:
-        cout << "Please enter numbers 1-7 only!" << endl;break;
-    }
+         for(int i=0; i<7; ++i){
+            //This will highlight the choice in the menu
+            if(i==pointer){
+                gotoxy(48,10+i);
+                SetConsoleTextAttribute(hConsole, 1);
+                cout << Menu[i] << endl;
+            }else{
+                gotoxy(48,10+i);
+                SetConsoleTextAttribute(hConsole, 15); // set color of the text to white
+                cout << Menu[i] << endl;
+            }
+             SetConsoleTextAttribute(hConsole, 15);
+        }
+        //This will check the key stroke that is being pressed in keyboard
+        while(true){
+            if(GetAsyncKeyState(VK_UP) != 0){
+                --pointer;
+                if(pointer == -1){
+                    pointer = 7;
+                }
+                break;
+            }else if(GetAsyncKeyState(VK_DOWN) != 0){
+                ++pointer;
+                if(pointer == 7){
+                    pointer = 0;
+                }
+                break;
+            }else if(ch=getch() == ENTER){
+                switch(pointer){
+                    case 0:
+                    {
+                        ShowConsoleCursor(true);
+                        checkBal();
+                        cout <<" Balance Inquiry\n";
+                        system("pause");
+                        break;
+                    }
+                    case 1:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        withdraw();
+                        cout <<"WITHDRAW\n";
+                        system("pause");
+                        break;
+                    }
+                     case 2:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        deposit();
+                        cout <<"DEPOSIT\n";
+                        system("pause");
+                        break;
+                    }
+                     case 3:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        fundTransfer();
+                        cout <<"FUND TRANSFER\n";
+                        system("pause");
+                        break;
+                    }
+                     case 4:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        changePin(); 
+                        cout <<"CHANGE PIN\n";
+                        system("pause");
+                        break;
+                    }
+                     case 5:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        withdraw();
+                        cout <<"MORE TRANSACTIONS\n";
+                        system("pause");
+                        break;
+                    }
+                    case 6:
+                    {
+                        ShowConsoleCursor(true);
+                        cout <<"THANK YOU FOR USING STUDENT BANK INC.\n";
+                        system("pause");
+                        exit(0);
+                    }
+                } break;
+    }  }    }
+}
+void gotoxy(int x,int y){
+    COORD coord = {0,0};
+    coord.X=x;
+    coord.Y=y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
+}
 
+void SetColor(int ForgC){
+  WORD wColor;
+
+  HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+                       //We use csbi for the wAttributes word.
+ if(GetConsoleScreenBufferInfo(hStdOut, &csbi))
+ {
+                 //Mask out all but the background attribute, and add in the forgournd color
+      wColor = (csbi.wAttributes & 0xF0) + (ForgC & 0x0F);
+      SetConsoleTextAttribute(hStdOut, wColor);
+ }
+ return;
+}
+
+void setFontStyle(int FontSize){
+    CONSOLE_FONT_INFOEX cfi;
+    cfi.cbSize = sizeof(cfi);
+    cfi.nFont = 0;
+    cfi.dwFontSize.X = 0;                   // Width of each character in the font
+    cfi.dwFontSize.Y = FontSize;                  // Height
+    cfi.FontFamily = FF_DONTCARE;
+    cfi.FontWeight = FW_NORMAL;
+    std::wcscpy(cfi.FaceName, L"Times New Roman"); // font style
+    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+}
+
+void ShowConsoleCursor(bool showFlag)
+{
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    CONSOLE_CURSOR_INFO     cursorInfo;
+
+    GetConsoleCursorInfo(out, &cursorInfo);
+    cursorInfo.bVisible = showFlag; // set the cursor visibility
+    SetConsoleCursorInfo(out, &cursorInfo);
 }
 
 
-void User::menu(){                           //Function for menu of the entire system
-    string choice;
 
-    cout << "\e[1;1H\e[2J" << endl;
-    cout << "Welcome to atm" << endl;
-    cout << "[1]. Registration" << endl;
-    cout << "[2]. Sign in" << endl;
-    cout << "[3]. Exit" << endl;
-    cout << "Please enter [1-3]: ";
 
-    getline(cin, choice);
-    
-    if(!(regex_match(choice, numberEx))){
-        cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
-        return;
-    }
+ void User::menu(){                           //Function for menu of the entire system
+
+    setFontStyle(40);
+    string Menu[3] =  {"  REGISTRATION  ", " SIGN-IN ", " EXIT "};
+    int pointer = 0;
+    const char ENTER = 13;//ASCII code for ENTER Key
+    char ch = ' ';
+    HANDLE  hConsole;
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    while(true){
+        system("cls");
+        ShowConsoleCursor(false);   
         
-    int c = stoi(choice);               // string to int
+                gotoxy(12,1);cout<<"             .----------------.  .----------------.  .----------------. "<<endl;
+                gotoxy(12,2);cout<<"             | .--------------. || .--------------. || .--------------. |"<<endl;
+                gotoxy(12,3);cout<<"             | |    _______   | || |   ______     | || |      _____   | |"<<endl;
+                gotoxy(12,4);cout<<"             | |   /  ___  |  | || |  |_   _ \\    | || |     |_   _|  | |"<<endl;
+                gotoxy(12,5);cout<<"             | |   | (__ \\_|  | || |   | |_) |    | || |       | |    | |"<<endl;
+                gotoxy(12,6);cout<<"             | |   '.___`-.   | || |   |  __'.    | || |       | |    | |"<<endl;
+                gotoxy(12,7);cout<<"             | |  | \\____) |  | || |  _| |__) |   | || |      _| |_   | |"<<endl;
+                gotoxy(12,8);cout<<"             | |  |_______.'  | || |  |_______/   | || |     |_____|  | |"<<endl;
+                gotoxy(12,9);cout<<"             | |              | || |              | || |              | |"<<endl;
+                gotoxy(12,10);cout<<"            | '--------------' || '--------------' || '--------------' |"<<endl;
+                gotoxy(12,11);cout<<"            '----------------'  '----------------'  '----------------' "<<endl;
+                                                                                                    
+        gotoxy(52,20);cout << "MAIN MENU\n\n";
+        // gotoxy(35, 16);
+        // cout<<"\nUSE UP OR DOWN ARROW KEYS TO NAVIGATE THROUGH MENU\n";
 
-    switch (c)
-    {
-    case 1: // case 1 for registration
-        cout << "REGISTRATION" << endl; registerAcc(); system("pause"); break;
-    case 2: // case 2 for signing in
-        cout << "SIGN-IN" << endl;openAcc();break;
-    case 3: // case 3 for exit
-        cout << "THANK YOU FOR USING STUDENT BANK INC." << endl;save();exit(0); break;
-    default:
-        cout << "Please enter numbers 1-3 only!" << endl;break;
+
+        for(int i=0; i<3; ++i){
+            //This will highlight the choice in the menu
+            if(i==pointer){
+                gotoxy(47,25+i);
+                SetConsoleTextAttribute(hConsole, 1);
+                cout << Menu[i] << endl;
+            }else{
+                gotoxy(47,25+i);
+                SetConsoleTextAttribute(hConsole, 15); // set color of the text to white
+                cout << Menu[i] << endl;
+            }
+             SetConsoleTextAttribute(hConsole, 15);
+        }
+        //This will check the key stroke that is being pressed in keyboard
+        while(true){
+            if(GetAsyncKeyState(VK_UP) != 0){
+                --pointer;
+                if(pointer == -1){
+                    pointer = 3;
+                }
+                break;
+            }else if(GetAsyncKeyState(VK_DOWN) != 0){
+                ++pointer;
+                if(pointer == 3){
+                    pointer = 0;
+                }
+                break;
+            }else if(ch=getch() == ENTER){
+                switch(pointer){
+                    case 0:
+                    {
+                        ShowConsoleCursor(true);
+                        retrieveAcc();
+                        cout <<" REGISTRATION\n";
+                        system("pause");
+                        break;
+                    }
+                    case 1:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        openAcc();
+                        cout <<"SIGN-IN\n";
+                        system("pause");
+                        break;
+                    }
+                    case 2:
+                    {
+                        ShowConsoleCursor(true);
+                        cout <<"THANK YOU FOR USING STUDENT BANK INC.\n";
+                        system("pause");
+                        exit(0);
+                    }
+                    // case 3:
+                    // {
+                    //     ShowConsoleCursor(true);
+                    //     //userDisplayStudents();
+                    //     cout <<" Add Student Record\n";
+                    //     system("pause");
+                    //     break;
+
+                    // }
+                    // case 4:
+                    // {
+                    //     ShowConsoleCursor(false);
+                    //     //STUDENTS.saveRecords();
+                    //     //exitMessage();
+                    //     cout <<" Return home\n";
+                    //     system("pause");
+                    //     exit(0);
+                    // }
+                }
+                break;
+            }
+        }
+
     }
-
-
 }
+
 

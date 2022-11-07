@@ -10,6 +10,7 @@
 #include "sha256.h"
 #include "header/functions.h"
 
+
 int main(){
    User us;
    us.setHead();
@@ -17,5 +18,9 @@ int main(){
    while(1){
       us.menu();
    }
+   
 
 }
+  
+
+
