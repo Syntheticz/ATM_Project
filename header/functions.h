@@ -29,9 +29,8 @@ UREC* User::locate(int accountNumber){                         // will locate ac
     UREC *pointer = head;                                      // set head pointer to null
     while(pointer != NULL){
         if(accountNumber == pointer->inf.accountNumber)        // if the account number is registered to our system
-         return pointer;                                       // it will return pointer
-        pointer = pointer->next;                               // then the pointer will point next
-    }
+         return pointer;  pointer = pointer->next;             // it will return pointer            
+    }                                                          // then the pointer will point next
     return NULL;                                               // then return null
 }
 
@@ -60,11 +59,16 @@ void User::add(UREC *temp){                                      // function for
 
 
 void User::registerAcc(){                                    // Function for registering/opening acc/atm
-    
+       cout<<" _____  ______ _____ _____  _____ _______ _____         _______ _____ ____  _   _ "<<endl;
+       cout<<"|  __ \\|  ____/ ____|_   _|/ ____|__   __|  __ \\     /\\|__   __|_   _/ __ \\| \\ | |"<<endl;
+       cout<<"| |__) | |__ | |  __  | | | (___    | |  | |__) |   /  \\  | |    | || |  | |  \\| |"<<endl;
+       cout<<"|  _  /|  __|| | |_ | | |  \\___ \\   | |  |  _  /   / /\\ \\ | |    | || |  | | . ` |"<<endl;
+       cout<<"| | \\ \\| |___| |__| |_| |_ ____) |  | |  | | \\ \\  / ____ \\| |   _| || |__| | |\\  |"<<endl;
+       cout<<"|_|  \\_\\______\\_____|_____|_____/   |_|  |_|  \\_\\/_/    \\_\\_|  |_____\\____/|_| \\_|"<<endl;
+            
     if(isCardInserted()){                                   //if usb is detected to be registered this will appear
-        cout << "Please insert different card to register.\nThis card was already registered. \nPlease proceed to sign-in." << endl;
-        system("pause");                                     
-        return;
+          cout << "Please insert different card to register.\nThis card was already registered. \nPlease proceed to sign-in." << endl;
+        system("pause"); return;                                     
     }
 
     UREC *usr = new UREC;
@@ -72,33 +76,34 @@ void User::registerAcc(){                                    // Function for reg
     time_t t = time(0);                                      // setting real-time
     tm* now = localtime(&t);
 
-    cout << "\e[1;1H\e[2J" << endl;
-    cout << "Please enter your name: ";                     // gets user's name
+      cout << "\e[1;1H\e[2J" << endl;
+      cout << "Please enter your name: ";                     // gets user's name
     getline(cin, input);
     if(validate(2)){registerAcc();}                                         // will validate if user's passed name validation
     usr->inf.name = input;
     system("cls");
 
     
-    cout <<"Welcome to Student Bank Inc., "<<input<<endl;
-    cout << "Please enter your phone number: +639";          // gets user's contact number
+      cout <<"Welcome to Student Bank Inc., "<<input<<endl;
+      cout << "Please enter your phone number: +639";          // gets user's contact number
     getline(cin, input); 
     if(validate(3)){registerAcc();}                          // will validate user's contact number but actually only counts if digits<10
     usr->inf.contact.append("+639");
     usr->inf.contact.append(input);
 
     buffer = "";
-    cout << "Please enter your birthday\nMonth [1-12] [MM]:  ";    //gets user's birthdate 
+      cout << "Please enter your birthday\nMonth [1-12] [MM]:  ";    //gets user's birthdate 
     getline(cin, input);
     month = stoi(input);
     if(validate(1)){registerAcc();}                                // will validate if input is correct
     buffer.append(input + "/");
     
-    cout << "Day [01-30] [dd]: ";                                  //gets user's birthmonth 
+      cout << "Day [01-30] [dd]: ";                                  //gets user's birthmonth 
     getline(cin, input);
     day = stoi(input);
     if(validate(1)){registerAcc();}                                // will validate if input is correct
     buffer.append(input + "/");
+
 
     cout << "Year Ex. 2001 [YYYY]: ";                               //gets user's birthyear
     getline(cin, input);
@@ -111,10 +116,10 @@ void User::registerAcc(){                                    // Function for reg
 
 
    
-    cout << "Please enter your unique pincode: ";                       //asks user of what pincode they want
+      cout << "Please enter your unique pincode: ";                       //asks user of what pincode they want
     input = asteriskPass();
     if(validate(1)){registerAcc();}
-    cout << "\nPlease re-enter your pincode: ";                        //buffer
+      cout << "\nPlease re-enter your pincode: ";                        //buffer
     buffer = asteriskPass();
     if(validate(5)){registerAcc();}
     userKey = input;
@@ -126,6 +131,7 @@ void User::registerAcc(){                                    // Function for reg
     usr->inf.savings = stoi(input);
 
     // confirmation notice
+
     cout << "\e[1;1H\e[2J" << endl;
     cout << "\nPlease confirm your information!" << endl;
     cout << "Name: " << usr->inf.name << endl;
@@ -133,11 +139,13 @@ void User::registerAcc(){                                    // Function for reg
     cout << "birthday: " << usr->inf.birthDay << endl;
     cout << "initial Deposit: " << usr->inf.savings << endl;
     cout << "\n\nType [Y] if all of the information are correct.\nType [N] if you want to re-enter our information: ";
+
     getline(cin, input);
     if(input == "Y" || input == "y"){
 
         buffer = "";
         buffer = get_uuid(); 
+
         int uuid = stoi(buffer);
         cout << "Your unique id is: " << uuid << endl; 
         usr->inf.accountNumber = uuid;
@@ -145,19 +153,19 @@ void User::registerAcc(){                                    // Function for reg
         acc.inf = usr->inf;
         saveToAcc();
         save();
+
     }
 }
 
 string User::asteriskPass(){                                              //asterisk password
-    char pin[6];
+    char a, pin[6];
     int i=0;
-    char a;
     for (i=0;;){
         a=getch();
         if(a>='0'&& a<='9'){                                            //if user put digits it will turn to asterisk
             pin[i]=a;                                                   //stores a in pass 
             ++i;
-            cout<<"*";                                                  // but user can't put letters
+              cout<<"*";                                                  // but user can't put letters
         }
         if(a=='\r'){                                                   //if enter is pressed
             pin[i]='\0';                                               //null means end of string.
@@ -165,7 +173,7 @@ string User::asteriskPass(){                                              //aste
         }
         if(a=='\b'&&i>=1){                                             //if user typed backspacei || i should be greater than 1.
                                                     
-            cout<<"\b \b";                                             //rub the character behind the cursor.
+              cout<<"\b \b";                                             //rub the character behind the cursor.
             --i;
         }
 
@@ -181,41 +189,38 @@ void User::openAcc(){   //Function for user putting usb drive
     do
     {
         cout << "\e[1;1H\e[2J" << endl;
-        cout << "Please insert your card!" << endl;
+          cout << "Please insert your card!" << endl;
         fp.open("g:/pincode.code", ios::in);                       //file read
         cout << "\e[1;1H\e[2J" << endl;
     } while (!fp);
-    fp.seekg(0, ios::end);
-    if(fp.tellg() == 0){
-        fp.close();
-        cout << "There is no registered user on this card!" << endl;
-        cout << "Do you want to register? type [Y] for yes and [N] for no: ";
-
-        getline(cin, input);
-        if(input == "y" || input == "Y"){
-            registerAcc();
-            acc.inf = temp->inf;          
-            saveToAcc();
-            fp.open("g:/pincode.code", ios::out);
-            if(fp.is_open()){
+        fp.seekg(0, ios::end);
+      if(fp.tellg() == 0){                                         //If system didn't track that the usb is registered
+          fp.close();                                              // The path will closed
+            cout << "There is no registered user on this card!" << endl;    
+            cout << "Do you want to register? type [Y] for yes and [N] for no: ";  // will ask if user wants to register if no, it will just loop again
+          getline(cin, input);
+          if(input == "y" || input == "Y"){
+             registerAcc();                                          // if yes, user will go to registerAcc function
+                acc.inf = temp->inf;                                    // the account info will store as temp info
+             fp.open("g:/pincode.code", ios::out);                   // file write
+              if(fp.is_open()){
                 fp << acc.inf.pincode;
             }
-            fp.close();
-
-            
-            }else{
-                return;
-            }
-    }
+        }
+    fp.seekg(0, ios::end);
+    if(fp.tellg() == 0){
     cout << "\e[1;1H\e[2J" << endl;
+
     cout << "Card detected..." << endl;
 
     checkPin();
+
 
     while(1){
         accountMenu();
     }
 }
+
 
 void User::checkPin(){
     START:
@@ -402,103 +407,253 @@ void User::changePin(){                                          // Function for
     }
 }
 
+
 void User::accountMenu(){
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Welcome to Student Banks Inc." << endl;
-    cout << "[1] Balance Inquiry" << endl;
-    cout << "[2] Withdraw" << endl;
-    cout << "[3] Deposit" << endl;
-    cout << "[4] Fund Transfer" << endl;
-    cout << "[5] Change PIN code" << endl;
-    cout << "[6] More options..." << endl;
-    cout << "[7] Exit" << endl;
-    cout << "Please numbers [1-7] only!: ";
-    string c;
-    getline(cin, c);
-    if(!(regex_match(c, numberEx))){
-        cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
-        return;
-    }
+
     
+    setFontStyle(40);
+    string Menu[7] =  {"  BALANCE INQUIRY  ", " WITHDRAW ", " DEPOSIT ", " FUND TRANSFER ", " CHANGE PIN ", " MORE TRANSACTIONS ", " EXIT "};
+    int pointer = 0;
+    const char ENTER = 13;//ASCII code for ENTER Key
+    char ch = ' ';
+    HANDLE  hConsole;
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    while(true){
+        system("cls");
+        ShowConsoleCursor(false);
 
-    switch (stoi(c))                 //Every choices needs to put pin first, if pin does not match, user doesn't need to put pin from the start
-    {                                // it will just go to the menu immediately
-    case 1:
-        checkPin();
-        checkBal();
-        break;
-    case 2:
-        checkPin();
-        withdraw();
-        break;
-    case 3:
-        checkPin();
-        deposit();
-        break;
-    case 4:
-        checkPin();
-        fundTransfer();
-        break;
-    case 5:
-        checkPin();
-        changePin();
-        break;
-    case 6:
-        /* code */
-        break;
-    case 7:
-        save();
-        saveToAcc();
-        exit(0);
-        break;
-    default:
-        cout << "Please enter numbers 1-7 only!" << endl;
-        break;
-    }
+         for(int i=0; i<7; ++i){
+            //This will highlight the choice in the menu
+            if(i==pointer){
+                gotoxy(48,10+i);
+                SetConsoleTextAttribute(hConsole, 1);
+                cout << Menu[i] << endl;
+            }else{
+                gotoxy(48,10+i);
+                SetConsoleTextAttribute(hConsole, 15); // set color of the text to white
+                cout << Menu[i] << endl;
+            }
+             SetConsoleTextAttribute(hConsole, 15);
+        }
+        //This will check the key stroke that is being pressed in keyboard
+        while(true){
+            if(GetAsyncKeyState(VK_UP) != 0){
+                --pointer;
+                if(pointer == -1){
+                    pointer = 7;
+                }
+                break;
+            }else if(GetAsyncKeyState(VK_DOWN) != 0){
+                ++pointer;
+                if(pointer == 7){
+                    pointer = 0;
+                }
+                break;
+            }else if(ch=getch() == ENTER){
+                switch(pointer){
+                    case 0:
+                    {
+                        ShowConsoleCursor(true);
+                        checkBal();
+                        cout <<" Balance Inquiry\n";
+                        system("pause");
+                        break;
+                    }
+                    case 1:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        withdraw();
+                        cout <<"WITHDRAW\n";
+                        system("pause");
+                        break;
+                    }
+                     case 2:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        deposit();
+                        cout <<"DEPOSIT\n";
+                        system("pause");
+                        break;
+                    }
+                     case 3:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        fundTransfer();
+                        cout <<"FUND TRANSFER\n";
+                        system("pause");
+                        break;
+                    }
+                     case 4:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        changePin(); 
+                        cout <<"CHANGE PIN\n";
+                        system("pause");
+                        break;
+                    }
+                     case 5:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        withdraw();
+                        cout <<"MORE TRANSACTIONS\n";
+                        system("pause");
+                        break;
+                    }
+                    case 6:
+                    {
+                        ShowConsoleCursor(true);
+                        cout <<"THANK YOU FOR USING STUDENT BANK INC.\n";
+                        system("pause");
+                        exit(0);
+                    }
+                } break;
+    }  }    }
+}
+void gotoxy(int x,int y){
+    COORD coord = {0,0};
+    coord.X=x;
+    coord.Y=y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),coord);
+}
 
+void SetColor(int ForgC){
+  WORD wColor;
+
+  HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+
+                       //We use csbi for the wAttributes word.
+ if(GetConsoleScreenBufferInfo(hStdOut, &csbi))
+ {
+                 //Mask out all but the background attribute, and add in the forgournd color
+      wColor = (csbi.wAttributes & 0xF0) + (ForgC & 0x0F);
+      SetConsoleTextAttribute(hStdOut, wColor);
+ }
+ return;
+}
+
+void setFontStyle(int FontSize){
+    CONSOLE_FONT_INFOEX cfi;
+    cfi.cbSize = sizeof(cfi);
+    cfi.nFont = 0;
+    cfi.dwFontSize.X = 0;                   // Width of each character in the font
+    cfi.dwFontSize.Y = FontSize;                  // Height
+    cfi.FontFamily = FF_DONTCARE;
+    cfi.FontWeight = FW_NORMAL;
+    std::wcscpy(cfi.FaceName, L"Times New Roman"); // font style
+    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+}
+
+void ShowConsoleCursor(bool showFlag)
+{
+    HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    CONSOLE_CURSOR_INFO     cursorInfo;
+
+    GetConsoleCursorInfo(out, &cursorInfo);
+    cursorInfo.bVisible = showFlag; // set the cursor visibility
+    SetConsoleCursorInfo(out, &cursorInfo);
 }
 
 
-void User::menu(){                           //Function for menu of the entire system
-    string choice;
 
-    cout << "\e[1;1H\e[2J" << endl;
-    cout << "Welcome to atm" << endl;
-    cout << "[1]. Registration" << endl;
-    cout << "[2]. Sign in" << endl;
-    cout << "[3]. Exit" << endl;
-    cout << "Please enter [1-3]: ";
+ void User::menu(){                           //Function for menu of the entire system
 
-    getline(cin, choice);
+    setFontStyle(40);
+    string Menu[3] =  {"  REGISTRATION  ", " SIGN-IN ", " EXIT "};
+    int pointer = 0;
+    const char ENTER = 13;//ASCII code for ENTER Key
+    char ch = ' ';
+    HANDLE  hConsole;
+    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    
-    if(!(regex_match(choice, numberEx))){
-        cout << "PLEASE ENTER NUMBERS ONLY!" << endl;
-        return;
-    }
+    while(true){
+        system("cls");
+        ShowConsoleCursor(false);   
         
-    int c = stoi(choice);               // string to int
+                gotoxy(12,1);cout<<"             .----------------.  .----------------.  .----------------. "<<endl;
+                gotoxy(12,2);cout<<"             | .--------------. || .--------------. || .--------------. |"<<endl;
+                gotoxy(12,3);cout<<"             | |    _______   | || |   ______     | || |      _____   | |"<<endl;
+                gotoxy(12,4);cout<<"             | |   /  ___  |  | || |  |_   _ \\    | || |     |_   _|  | |"<<endl;
+                gotoxy(12,5);cout<<"             | |   | (__ \\_|  | || |   | |_) |    | || |       | |    | |"<<endl;
+                gotoxy(12,6);cout<<"             | |   '.___`-.   | || |   |  __'.    | || |       | |    | |"<<endl;
+                gotoxy(12,7);cout<<"             | |  | \\____) |  | || |  _| |__) |   | || |      _| |_   | |"<<endl;
+                gotoxy(12,8);cout<<"             | |  |_______.'  | || |  |_______/   | || |     |_____|  | |"<<endl;
+                gotoxy(12,9);cout<<"             | |              | || |              | || |              | |"<<endl;
+                gotoxy(12,10);cout<<"            | '--------------' || '--------------' || '--------------' |"<<endl;
+                gotoxy(12,11);cout<<"            '----------------'  '----------------'  '----------------' "<<endl;
+                                                                                                    
+        gotoxy(52,20);cout << "MAIN MENU\n\n";
+        // gotoxy(35, 16);
+        // cout<<"\nUSE UP OR DOWN ARROW KEYS TO NAVIGATE THROUGH MENU\n";
 
-    switch (c)
-    {
-    case 1: // case 1 for registration
-        cout << "REGISTRATION" << endl;
-        registerAcc();
-        system("pause");
-        break;
-    case 2: // case 2 for signing in
-        cout << "SIGN-IN" << endl;
-        openAcc();
-        break;
-    case 3:
-        save();
-        exit(0);
-        break;
-    default:
-        cout << "Please enter numbers 1-3 only!" << endl;
-        break;
+
+        for(int i=0; i<3; ++i){
+            //This will highlight the choice in the menu
+            if(i==pointer){
+                gotoxy(47,25+i);
+                SetConsoleTextAttribute(hConsole, 1);
+                cout << Menu[i] << endl;
+            }else{
+                gotoxy(47,25+i);
+                SetConsoleTextAttribute(hConsole, 15); // set color of the text to white
+                cout << Menu[i] << endl;
+            }
+             SetConsoleTextAttribute(hConsole, 15);
+        }
+        //This will check the key stroke that is being pressed in keyboard
+        while(true){
+            if(GetAsyncKeyState(VK_UP) != 0){
+                --pointer;
+                if(pointer == -1){
+                    pointer = 3;
+                }
+                break;
+            }else if(GetAsyncKeyState(VK_DOWN) != 0){
+                ++pointer;
+                if(pointer == 3){
+                    pointer = 0;
+                }
+                break;
+            }else if(ch=getch() == ENTER){
+                switch(pointer){
+                    case 0:
+                    {
+                        ShowConsoleCursor(true);
+                        retrieveAcc();
+                        cout <<" REGISTRATION\n";
+                        system("pause");
+                        break;
+                    }
+                    case 1:
+                    {
+                        
+                        ShowConsoleCursor(true);
+                        openAcc();
+                        cout <<"SIGN-IN\n";
+                        system("pause");
+                        break;
+                    }
+                    case 2:
+                    {
+                        ShowConsoleCursor(true);
+                        cout <<"THANK YOU FOR USING STUDENT BANK INC.\n";
+                        system("pause");
+                        exit(0);
+                    }
+                    
+                }
+                break;
+            }
+        }
+
     }
-
-
 }
-
