@@ -1,5 +1,7 @@
 #include "filehandling.h"
 
+time_t tt = time(0);
+tm* now = localtime(&tt);
 
 extern "C" char* strptime(const char* str, const char* format, struct tm* time) {
   istringstream input(str);
@@ -14,9 +16,6 @@ extern "C" char* strptime(const char* str, const char* format, struct tm* time) 
 
 bool User::validate(int mode){                          //Returns True if invalid
     //Date Variables
-    struct tm timeStruct;
-    time_t t = time(0);
-    tm* now = localtime(&t);
     fstream fp;
 
     switch (mode)

@@ -1,10 +1,13 @@
+#include "validation.h"
 
 
-#include "validation.h" /// expression
 
-void RECEIPT::setTime(){                                                  ////Function to set real-time in receipt of user
-    time_t now = time(0);
-    Date = ctime(&now);
+
+
+tm* User::setTime(){                                                  ////Function to set real-time in receipt of user
+    time_t t = time(0);
+    tm* time = localtime(&t);
+    return time;
 }
 
 string get_uuid() {                                                      //will generate a unique transaction number
@@ -136,15 +139,12 @@ void User::registerAcc(){                                    // Function for reg
         buffer = "";
         buffer = get_uuid(); 
         int uuid = stoi(buffer);
-        cout << "Your unique id is: " << buffer << endl; 
+        cout << "Your unique id is: " << uuid << endl; 
         usr->inf.accountNumber = uuid;
         add(usr);
         acc.inf = usr->inf;
         saveToAcc();
         save();
-        return;
-    }else{
-        return;
     }
 }
 
@@ -215,8 +215,6 @@ void User::openAcc(){   //Function for user putting usb drive
     while(1){
         accountMenu();
     }
-
-   
 }
 
 void User::checkPin(){
@@ -253,7 +251,8 @@ void User::withdraw(){                                           // Function for
     cout << "THANK YOU FOR WITHDRAWING AT STUDENTS BANK INC." << endl;
     save();
     saveToAcc();
-    checkBal();                                                     // will display balance before exit
+    withdrawReceipt();                                                     // will display balance before exit
+    system("pause");
 }
 
 void User::checkBal(){                                             // Function for displaying remaining balance for savings
@@ -274,8 +273,9 @@ void User::deposit(){                                              //Function fo
     pointer->inf.savings = acc.inf.savings;
     cout << "DEPOSIT SUCCESSFUL!" << endl;                         // User can proceed
     save();
-    saveToAcc();
-    checkBal();                                                    // will display remaining balance before exit
+    saveToAcc();                                                  
+    depositReceipt();                                               // will display remaining balance before exit
+    system("pause");
 }
 
 
@@ -345,7 +345,7 @@ void User::fundTransfer(){                                         // Function f
         decryptStandard("../records.txt.cpt", mainKey);
         save();
         saveToAcc();                                    // fund transfer successfully
-        checkBal();                                                                          // wil display remaining balance before exit
+        fundTransferReceipt(point);                                                                          // wil display remaining balance before exit
         system("pause");
         return;
     }
@@ -389,8 +389,6 @@ void User::changePin(){                                          // Function for
 
             acc.inf.pincode = sha256(buffer);   // if true, then the re-enter pin will be saved
             decryptStandard(CARD_PATH_ENCRYPTION, userKey);
-            cout << "Decrypted" << endl;
-            system("pause");
             encryptStandard(CARD_PATH, buffer);
             userKey = buffer;
             UREC *p = locate(acc.inf.accountNumber);
@@ -404,9 +402,7 @@ void User::changePin(){                                          // Function for
     }
 }
 
-// TODO make user not to enter pin again when wrong on the below choices
 void User::accountMenu(){
-
     cout << "\e[1;1H\e[2J" << endl;
     cout << "Welcome to Student Banks Inc." << endl;
     cout << "[1] Balance Inquiry" << endl;

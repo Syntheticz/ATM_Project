@@ -56,7 +56,7 @@ void User::retrieve(){
 }
 
 void User::saveToAcc(){
-    fstream fp;
+    fstream fp, fs;
     UREC pointer = acc;
     decryptStandard(CARD_PATH_ENCRYPTION, userKey);
     fp.open(CARD_PATH, ios::out);
@@ -65,16 +65,14 @@ void User::saveToAcc(){
     }else{  
             fp << pointer.inf.name << "\n" << pointer.inf.accountNumber << " " << pointer.inf.pincode << " " << pointer.inf.birthDay << " " << pointer.inf.savings << endl;     
     }
-    fp.clear();
     fp.close();
 
-
-    fp.open(KEY_CODE_PATH, ios::out);
-    if(fp.is_open()){
-       fp << pointer.inf.pincode;
-       system("pause");
+    string buff = pointer.inf.pincode;
+    fs.open(KEY_CODE_PATH, ios::out);
+    if(fs.is_open()){
+       fs << buff;
     }
-    fp.close();
+    fs.close();
     encryptStandard(CARD_PATH, userKey);
 }
 
