@@ -19,11 +19,12 @@ regex nameEx("^[a-zA-Z\\s]*$");                           //will check if user p
 const int MAX_VALID_YR = 9999;                             // Returns true if
 const int MIN_VALID_YR = 1800;                             // given year is valid.
 
+
 typedef struct receipt{                                  // structure for user's receipt (resibo)
     string Date;
     float cashIn, cashOut;
 
-    void setTime();
+
 }RECEIPT;                                                // name of struct for receipt
 
 typedef struct list{                                   
@@ -103,6 +104,12 @@ class User{
     UREC* locate(int accountNumber);
     void accountMenu();
     // TODO Add features.    
+    //Recipt
+    void reciptAdd();
+    void withdrawReceipt();
+    void depositReceipt();
+    void fundTransferReceipt(UREC *point);    
+    tm* setTime();
 
     //Debug
     void displayList();
